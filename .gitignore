@@ -1,0 +1,13 @@
+# Ignore all files but the relevant folders
+# GXPEngine
+!/Shop_GXPEngine_base
+/Shop_GXPEngine_base/*
+!/Shop_GXPEngine_base/GXPEngine
+/Shop_GXPEngine_base/GXPEngine/*
+!/Shop_GXPEngine_base/GXPEngine/Shop
+# Unity
+!/Shop_Unity_base
+/Shop_Unity_base/*
+!/Shop_Unity_base/Assets
+/Shop_Unity_base/Assets/*
+!/Shop_Unity_base/Assets/Scripts
