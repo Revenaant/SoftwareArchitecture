@@ -45,6 +45,8 @@ namespace States
             Debug.Assert(shopMessageView != null);
 
             //setup model and controller
+            Customer customer = new Customer();
+            shopModel.SetCustomer(customer);
 
             //link them
             shopView.Initialize(shopModel, shopController);//view1
