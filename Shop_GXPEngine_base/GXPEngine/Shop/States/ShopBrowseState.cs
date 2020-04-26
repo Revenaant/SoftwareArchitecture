@@ -13,38 +13,29 @@ namespace States
         private ShopView shopView;
         private ShopMessageView shopMessageView;
 
-        //------------------------------------------------------------------------------------------------------------------------
-        //                                                  ShopBrowseState()
-        //------------------------------------------------------------------------------------------------------------------------
         public ShopBrowseState()
         {
-            //create shop
+            // Create shop
             ShopModel shop = new ShopModel();
 
-            //create controller
+            // Create controller
             shopController = new ShopController(shop);
 
-            //create shop view
+            // Create shop view
             shopView = new ShopView(shop, shopController);
             AddChild(shopView);
             Helper.AlignToCenter(shopView, true, true);
 
-            //create message view
+            // Create message view
             shopMessageView = new ShopMessageView(shop);
             AddChild(shopMessageView);
             Helper.AlignToCenter(shopMessageView, true, false);
-
         }
 
-        //------------------------------------------------------------------------------------------------------------------------
-        //                                                  Step()
-        //------------------------------------------------------------------------------------------------------------------------
-        //update the views
         public void Step()
         {
             shopView.Step();
             shopMessageView.Step();
         }
-
     }
 }

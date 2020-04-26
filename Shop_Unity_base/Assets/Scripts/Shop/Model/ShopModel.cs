@@ -4,27 +4,26 @@
     using System.Collections.Generic;
     using Utility;
 
-    //This class holds the model of our Shop. It contains an ItemList. In its current setup, view and controller need to get
-    //data via polling. Advisable is, to set up an event system for better integration with View and Controller.
-
+    // This class holds the model of our Shop. It contains an ItemList. In its current setup, view and controller need to get
+    // data via polling. Advisable is, to set up an event system for better integration with View and Controller.
     public class ShopModel
     {
-        private int gold;
-        private const int STARTING_GOLD = 1000;
-
-        private const int MAX_MESSAGES_IN_QUEUE = 4; //it caches the last four messages
-        private Queue<string> messages = new Queue<string>();
-
-        private List<Item> itemList = new List<Item>(); //items in the store
-        private int selectedItemIndex = 0; //selected item index
-        private Customer customer;
-
         public static event Events.BuyDelegate OnBuyEvent;
         public static event Events.SellDelegate OnSellEvent;
 
+        private const int STARTING_GOLD = 1000;
+        private Customer customer;
+        private int gold;
+
+        private const int MAX_MESSAGES_IN_QUEUE = 4;
+        private Queue<string> messages = new Queue<string>();
+
+        private List<Item> itemList = new List<Item>();
+        private int selectedItemIndex = 0;
+
         public ShopModel()
         {
-            PopulateInventory(16); //currently, it has 16 items
+            PopulateInventory(16);
             gold = STARTING_GOLD;
 
             OnBuyEvent += OnCustomerBuyItem;
@@ -41,81 +40,69 @@
         {
             for (int index = 0; index < itemCount; index++)
             {
-                Item item = new Item("item", "item", 10); //item name, item icon, cost
+                Item item = new Item(name: "item", iconName: "item", cost: 10);
                 itemList.Add(item);
             }
         }
 
-        //returns the selected item
+        // Returns the selected item
         public Item GetSelectedItem()
         {
             if (selectedItemIndex >= 0 && selectedItemIndex < itemList.Count)
-            {
                 return itemList[selectedItemIndex];
-            }
             else
-            {
                 return null;
-            }
         }
 
-        //attempts to select the given item, fails silently
+        // Attempts to select the given item, fails silently
         public void SelectItem(Item item)
         {
             if (item != null)
             {
                 int index = itemList.IndexOf(item);
                 if (index >= 0)
-                {
                     selectedItemIndex = index;
-                }
             }
         }
 
-        //attempts to select the item, specified by 'index', fails silently
+        // Attempts to select the item, specified by 'index', fails silently
         public void SelectItemByIndex(int index)
         {
             if (index >= 0 && index < itemList.Count)
-            {
                 selectedItemIndex = index;
-            }
         }
 
-        //returns the index of the current selected item
+        // Returns the index of the current selected item
         public int GetSelectedItemIndex()
         {
             return selectedItemIndex;
         }
 
-        //returns a list with all current items in the shop.
+        // Returns a list with all current items in the shop.
         public List<Item> GetItems()
         {
-            return new List<Item>(itemList); //returns a copy of the list, so the original is kept intact, 
-                                             //however this is shallow copy of the original list, so changes in 
-                                             //the original list will likely influence the copy, apply 
-                                             //creational patterns like prototype to fix this. 
+            return new List<Item>(itemList); // returns a copy of the list, so the original is kept intact, 
+                                             // however this is shallow copy of the original list, so changes in 
+                                             // the original list will likely influence the copy, apply 
+                                             // creational patterns like prototype to fix this. 
         }
 
-        //returns the number of items
+        // Returns the number of items
         public int GetItemCount()
         {
             return itemList.Count;
         }
 
-        //tries to get an item, specified by index. returns null if unsuccessful
+        // Rries to get an item, specified by index. returns null if unsuccessful
         public Item GetItemByIndex(int index)
         {
             if (index >= 0 && index < itemList.Count)
-            {
                 return itemList[index];
-            }
             else
-            {
                 return null;
-            }
         }
 
-        //returns the cached list of messages
+        // Returns the cached list of messages
         public string[] GetMessages()
         {
             // TODO this defeats the purpose of a queue
@@ -125,7 +112,7 @@
             return queuedMessages;
         }
 
-        //adds a message to the cache, cleaning it up if the limit is exceeded
+        // Adds a message to the cache, cleaning it up if the limit is exceeded
         private void AddMessage(string message)
         {
             messages.Enqueue(message);

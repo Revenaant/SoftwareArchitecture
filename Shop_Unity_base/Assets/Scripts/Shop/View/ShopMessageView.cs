@@ -7,10 +7,7 @@
     {
         private ShopModel shopModel;
 
-        //------------------------------------------------------------------------------------------------------------------------
-        //                                                  Initialize()
-        //------------------------------------------------------------------------------------------------------------------------
-        //This method is used to initialize values, because we can't use a constructor.
+        // This method is used to initialize values, because we can't use a constructor.
         public void Initialize(ShopModel shopModel)
         {
             this.shopModel = shopModel;
@@ -28,8 +25,8 @@
         //------------------------------------------------------------------------------------------------------------------------
         //                                                  Update()
         //------------------------------------------------------------------------------------------------------------------------        
-        //this method polls the shop for messages and prints them. Since the shop caches the messages, it prints the same
-        //message each frame. An event system would work better.
+        // This method polls the shop for messages and prints them. Since the shop caches the messages, it prints the same
+        // message each frame. An event system would work better.
 
         private void OnShopUpdated(Item item, Customer customer)
         {

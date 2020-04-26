@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using Utility;
-
-namespace Model
+﻿namespace Model
 {
+    using System;
+    using System.Collections.Generic;
+    using Utility;
+
     public class Customer
     {
         private Inventory inventory;

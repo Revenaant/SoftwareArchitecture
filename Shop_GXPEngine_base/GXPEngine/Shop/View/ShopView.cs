@@ -8,22 +8,19 @@
     using Model;
     using Controller;
 
-    //This Class draws the icons for the items in the store
+    // This Class draws the icons for the items in the store
     public class ShopView : Canvas
     {
-        const int Columns = 4;
-        const int Spacing = 80;
-        const int Margin = 18;
+        const int COLUMNS = 4;
+        const int SPACING = 80;
+        const int MARGIN = 18;
 
         private ShopModel shopModel;
         private ShopController shopController;
 
-        //the icon cache is built in here, that violates the S.R. principle.
+        // The icon cache is built in here, that violates the S.R. principle.
         private Dictionary<string, Texture2D> iconCache;
 
-        //------------------------------------------------------------------------------------------------------------------------
-        //                                                  ShopView()
-        //------------------------------------------------------------------------------------------------------------------------        
         public ShopView(ShopModel shop, ShopController shopController) : base(340, 340)
         {
             this.shopModel = shop;
@@ -50,9 +47,6 @@
             DrawItems();
         }
 
-        //------------------------------------------------------------------------------------------------------------------------
-        //                                                  Step()
-        //------------------------------------------------------------------------------------------------------------------------        
         public void Step()
         {
             DrawBackground();
@@ -60,9 +54,6 @@
             HandleNavigation();
         }
 
-        //------------------------------------------------------------------------------------------------------------------------
-        //                                                  HandleNavigation()
-        //------------------------------------------------------------------------------------------------------------------------        
         private void HandleNavigation()
         {
             if (Input.GetKeyDown(Key.LEFT))
@@ -92,9 +83,6 @@
             }
         }
 
-        //------------------------------------------------------------------------------------------------------------------------
-        //                                                  MoveSelection()
-        //------------------------------------------------------------------------------------------------------------------------        
         private void MoveSelection(int moveX, int moveY)
         {
             int itemIndex = shopModel.GetSelectedItemIndex();
@@ -103,10 +91,12 @@
             int requestedSelectionX = currentSelectionX + moveX;
             int requestedSelectionY = currentSelectionY + moveY;
 
-            if (requestedSelectionX >= 0 && requestedSelectionX < Columns) //check horizontal boundaries
+            // Check horizontal boundaries
+            if (requestedSelectionX >= 0 && requestedSelectionX < COLUMNS)
             {
+                // Check vertical boundaries
                 int newItemIndex = GetIndexFromGridPosition(requestedSelectionX, requestedSelectionY);
-                if (newItemIndex >= 0 && newItemIndex <= shopModel.GetItemCount()) //check vertical boundaries
+                if (newItemIndex >= 0 && newItemIndex <= shopModel.GetItemCount())
                 {
                     Item item = shopModel.GetItemByIndex(newItemIndex);
                     shopController.SelectItem(item);
@@ -114,63 +104,43 @@
             }
         }
 
-        //------------------------------------------------------------------------------------------------------------------------
-        //                                                  GetColumnByIndex()
-        //------------------------------------------------------------------------------------------------------------------------        
         private int GetIndexFromGridPosition(int column, int row)
         {
-            return row * Columns + column;
+            return row * COLUMNS + column;
         }
 
-        //------------------------------------------------------------------------------------------------------------------------
-        //                                                  GetColumnByIndex()
-        //------------------------------------------------------------------------------------------------------------------------        
         private int GetColumnByIndex(int index)
         {
-            return index % Columns;
+            return index % COLUMNS;
         }
 
-        //------------------------------------------------------------------------------------------------------------------------
-        //                                                  GetRowByIndex()
-        //------------------------------------------------------------------------------------------------------------------------        
         private int GetRowByIndex(int index)
         {
-            return index / Columns; //rounds down
+            // Rounds down
+            return index / COLUMNS;
         }
 
-        //------------------------------------------------------------------------------------------------------------------------
-        //                                                  DrawBackground()
-        //------------------------------------------------------------------------------------------------------------------------        
         private void DrawBackground()
         {
             graphics.Clear(Color.White);
         }
 
-        //------------------------------------------------------------------------------------------------------------------------
-        //                                                  DrawItems()
-        //------------------------------------------------------------------------------------------------------------------------        
         private void DrawItems()
         {
             List<Item> items = shopModel.GetItems();
             for (int index = 0; index < items.Count; index++)
             {
                 Item item = items[index];
-                int iconX = GetColumnByIndex(index) * Spacing + Margin;
-                int iconY = GetRowByIndex(index) * Spacing + Margin;
+                int iconX = GetColumnByIndex(index) * SPACING + MARGIN;
+                int iconY = GetRowByIndex(index) * SPACING + MARGIN;
+
                 if (item == shopModel.GetSelectedItem())
-                {
                     DrawSelectedItem(item, iconX, iconY);
-                }
                 else
-                {
                     DrawItem(item, iconX, iconY);
-                }
             }
         }
 
-        //------------------------------------------------------------------------------------------------------------------------
-        //                                                  DrawItem()
-        //------------------------------------------------------------------------------------------------------------------------        
         private void DrawItem(Item item, int iconX, int iconY)
         {
             Texture2D iconTexture = GetCachedTexture(item.iconName);
@@ -179,26 +149,17 @@
             graphics.DrawString(item.Cost.ToString(), SystemFonts.CaptionFont, Brushes.Black, iconX + 16, iconY + 32);
         }
 
-        //------------------------------------------------------------------------------------------------------------------------
-        //                                                  DrawSelectedItem()
-        //------------------------------------------------------------------------------------------------------------------------        
         private void DrawSelectedItem(Item item, int iconX, int iconY)
         {
             if (Utils.Random(0, 2) == 0)
-            {
                 DrawItem(item, iconX, iconY);
-            }
         }
 
-        //------------------------------------------------------------------------------------------------------------------------
-        //                                                  GetCachedTexture()
-        //------------------------------------------------------------------------------------------------------------------------        
         private Texture2D GetCachedTexture(string filename)
         {
             if (!iconCache.ContainsKey(filename))
-            {
                 iconCache.Add(filename, new Texture2D("media/" + filename + ".png"));
-            }
+
             return iconCache[filename];
         }
     }
