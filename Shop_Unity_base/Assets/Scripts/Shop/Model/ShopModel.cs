@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using Utility;
 
     //This class holds the model of our Shop. It contains an ItemList. In its current setup, view and controller need to get
     //data via polling. Advisable is, to set up an event system for better integration with View and Controller.
@@ -11,19 +12,31 @@
         private int gold;
         private const int STARTING_GOLD = 1000;
 
-        const int MaxMessageQueueCount = 4; //it caches the last four messages
-        private List<string> messages = new List<string>();
+        private const int MAX_MESSAGES_IN_QUEUE = 4; //it caches the last four messages
+        private Queue<string> messages = new Queue<string>();
 
         private List<Item> itemList = new List<Item>(); //items in the store
         private int selectedItemIndex = 0; //selected item index
         private Customer customer;
-  
+
+        public static event Events.BuyDelegate OnBuyEvent;
+        public static event Events.SellDelegate OnSellEvent;
+
         public ShopModel()
         {
             PopulateInventory(16); //currently, it has 16 items
             gold = STARTING_GOLD;
+
+            OnBuyEvent += OnCustomerBuyItem;
+            OnSellEvent += OnCustomerSellItem;
         }
-    
+
+        ~ShopModel()
+        {
+            OnBuyEvent -= OnCustomerBuyItem;
+            OnSellEvent -= OnCustomerSellItem;
+        }
+
         private void PopulateInventory(int itemCount)
         {
             for (int index = 0; index < itemCount; index++)
@@ -32,7 +45,7 @@
                 itemList.Add(item);
             }
         }
-   
+
         //returns the selected item
         public Item GetSelectedItem()
         {
@@ -58,7 +71,7 @@
                 }
             }
         }
- 
+
         //attempts to select the item, specified by 'index', fails silently
         public void SelectItemByIndex(int index)
         {
@@ -73,7 +86,7 @@
         {
             return selectedItemIndex;
         }
-    
+
         //returns a list with all current items in the shop.
         public List<Item> GetItems()
         {
@@ -82,7 +95,7 @@
                                              //the original list will likely influence the copy, apply 
                                              //creational patterns like prototype to fix this. 
         }
-      
+
         //returns the number of items
         public int GetItemCount()
         {
@@ -101,47 +114,46 @@
                 return null;
             }
         }
-    
+
         //returns the cached list of messages
         public string[] GetMessages()
         {
-            return messages.ToArray();
+            // TODO this defeats the purpose of a queue
+            string[] queuedMessages = messages.ToArray();
+            messages.Clear();
+
+            return queuedMessages;
         }
 
         //adds a message to the cache, cleaning it up if the limit is exceeded
         private void AddMessage(string message)
         {
-            messages.Add(message);
-            while (messages.Count > MaxMessageQueueCount)
-            {
-                messages.RemoveAt(0);
-            }
+            messages.Enqueue(message);
+
+            while (messages.Count > MAX_MESSAGES_IN_QUEUE)
+                messages.Dequeue();
         }
 
         public void SetCustomer(Customer customer)
         {
             this.customer = customer;
         }
-    
+
         public Item Buy()
         {
             Item item = GetSelectedItem();
 
-            if(customer.Gold < item.Cost)
+            if (customer.Gold < item.Cost)
             {
                 AddMessage("You do not have enough gold to buy that item!");
                 AddMessage("Item cost: " + item.Cost + ", Your gold: " + customer.Gold);
                 return null;
             }
 
-            // Transaction
-            customer.Purchase(item);
-            gold += item.Cost;
-
-            itemList.Remove(item);
+            OnBuyEvent?.Invoke(item, customer);
             return item;
         }
-   
+
         // We assume that the customer has the same type of items that the shop has
         public void Sell()
         {
@@ -153,9 +165,32 @@
                 return;
             }
 
-            customer.Sell(item);
-            itemList.Add(item);
+            OnSellEvent?.Invoke(item, customer);
         }
 
+        // TODO sent messages have old data
+        private void OnCustomerBuyItem(Item item, Customer customer)
+        {
+            AddGold(item.Cost);
+            itemList.Remove(item);
+
+            AddMessage($"{customer.Name} purchased [{item.name}] from the shop for -{item.Cost} gold");
+            AddMessage($"{customer.Name}'s gold: {customer.Gold}");
+        }
+
+        private void OnCustomerSellItem(Item item, Customer customer)
+        {
+            AddGold(-item.Cost);
+            itemList.Add(item);
+
+            AddMessage($"{customer.Name} sold [{item.name}] to the shop for +{item.Cost} gold");
+            AddMessage($"{customer.Name}'s gold: {customer.Gold}");
+        }
+
+        private void AddGold(int value)
+        {
+            gold += value;
+            gold.Clamp(0, 99999);
+        }
     }
 }

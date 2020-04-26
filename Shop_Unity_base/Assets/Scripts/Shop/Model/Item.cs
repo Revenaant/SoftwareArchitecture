@@ -16,6 +16,5 @@
             this.iconName = iconName;
             this.Cost = amount;
         }
-
     }
 }

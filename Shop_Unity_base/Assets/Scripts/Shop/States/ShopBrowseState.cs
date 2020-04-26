@@ -24,7 +24,7 @@ namespace States
         //This method gets the whole setup going
         protected void Start()
         {
-            Initialize();  
+            Initialize();
         }
 
         //------------------------------------------------------------------------------------------------------------------------
@@ -45,7 +45,7 @@ namespace States
             Debug.Assert(shopMessageView != null);
 
             //setup model and controller
-            Customer customer = new Customer();
+            Customer customer = new Customer("Guy");
             shopModel.SetCustomer(customer);
 
             //link them
