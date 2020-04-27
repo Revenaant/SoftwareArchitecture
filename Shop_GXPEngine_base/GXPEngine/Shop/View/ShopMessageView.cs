@@ -15,9 +15,25 @@ namespace View
         public ShopMessageView(ShopModel shop) : base(800, 100)
         {
             this.shop = shop;
+
+            DrawLogElements();
+
+            ShopModel.OnBuyEvent += OnShopUpdated;
+            ShopModel.OnSellEvent += OnShopUpdated;
         }
 
-        public void Step()
+        ~ShopMessageView()
+        {
+            ShopModel.OnBuyEvent -= OnShopUpdated;
+            ShopModel.OnSellEvent -= OnShopUpdated;
+        }
+
+        private void OnShopUpdated(Item item, Customer customer)
+        {
+            DrawLogElements();
+        }
+
+        private void DrawLogElements()
         {
             DrawBackground();
             DrawMessages();

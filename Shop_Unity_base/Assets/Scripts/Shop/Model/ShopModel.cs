@@ -1,5 +1,6 @@
 ﻿namespace Model
 {
+    using Model.Items;
     using System;
     using System.Collections.Generic;
     using Utility;
@@ -18,12 +19,12 @@
         private const int MAX_MESSAGES_IN_QUEUE = 4;
         private Queue<string> messages = new Queue<string>();
 
-        private List<Item> itemList = new List<Item>();
-        private int selectedItemIndex = 0;
+        private Inventory inventory;
+        public Inventory Inventory => inventory;
 
         public ShopModel()
         {
-            PopulateInventory(16);
+            PopulateInventory(24);
             gold = STARTING_GOLD;
 
             OnBuyEvent += OnCustomerBuyItem;
@@ -38,68 +39,30 @@
 
         private void PopulateInventory(int itemCount)
         {
+            inventory = new Inventory(itemCount);
+            Random random = new Random();
+
             for (int index = 0; index < itemCount; index++)
             {
-                Item item = new Item(name: "item", iconName: "item", cost: 10);
-                itemList.Add(item);
+                Item item;
+                // TODO get random from the max types of items
+                switch (random.Next(0, 3))
+                {
+                    case 0:
+                        item = new Item(name: "Item", iconName: "item", cost: 10);
+                        break;
+                    case 1:
+                        item = new Weapon(name: "Weapon", iconName: "item", cost: 15);
+                        break;
+                    case 2:
+                        item = new Potion(name: "Potion", iconName: "item", cost: 4);
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+
+                inventory.Add(item);
             }
-        }
-
-        // Returns the selected item
-        public Item GetSelectedItem()
-        {
-            if (selectedItemIndex >= 0 && selectedItemIndex < itemList.Count)
-                return itemList[selectedItemIndex];
-            else
-                return null;
-        }
-
-        // Attempts to select the given item, fails silently
-        public void SelectItem(Item item)
-        {
-            if (item != null)
-            {
-                int index = itemList.IndexOf(item);
-                if (index >= 0)
-                    selectedItemIndex = index;
-            }
-        }
-
-        // Attempts to select the item, specified by 'index', fails silently
-        public void SelectItemByIndex(int index)
-        {
-            if (index >= 0 && index < itemList.Count)
-                selectedItemIndex = index;
-        }
-
-        // Returns the index of the current selected item
-        public int GetSelectedItemIndex()
-        {
-            return selectedItemIndex;
-        }
-
-        // Returns a list with all current items in the shop.
-        public List<Item> GetItems()
-        {
-            return new List<Item>(itemList); // returns a copy of the list, so the original is kept intact, 
-                                             // however this is shallow copy of the original list, so changes in 
-                                             // the original list will likely influence the copy, apply 
-                                             // creational patterns like prototype to fix this. 
-        }
-
-        // Returns the number of items
-        public int GetItemCount()
-        {
-            return itemList.Count;
-        }
-
-        // Rries to get an item, specified by index. returns null if unsuccessful
-        public Item GetItemByIndex(int index)
-        {
-            if (index >= 0 && index < itemList.Count)
-                return itemList[index];
-            else
-                return null;
         }
 
         // Returns the cached list of messages
@@ -128,7 +91,7 @@
 
         public Item Buy()
         {
-            Item item = GetSelectedItem();
+            Item item = inventory.GetSelectedItem();
 
             if (customer.Gold < item.Cost)
             {
@@ -144,7 +107,7 @@
         // We assume that the customer has the same type of items that the shop has
         public void Sell()
         {
-            Item item = GetSelectedItem();
+            Item item = inventory.GetSelectedItem();
 
             if (gold >= 0 && gold < item.Cost)
             {
@@ -159,7 +122,7 @@
         private void OnCustomerBuyItem(Item item, Customer customer)
         {
             AddGold(item.Cost);
-            itemList.Remove(item);
+            inventory.Remove(item);
 
             AddMessage($"{customer.Name} purchased [{item.name}] from the shop for -{item.Cost} gold");
             AddMessage($"{customer.Name}'s gold: {customer.Gold}");
@@ -168,7 +131,7 @@
         private void OnCustomerSellItem(Item item, Customer customer)
         {
             AddGold(-item.Cost);
-            itemList.Add(item);
+            inventory.Add(item);
 
             AddMessage($"{customer.Name} sold [{item.name}] to the shop for +{item.Cost} gold");
             AddMessage($"{customer.Name}'s gold: {customer.Gold}");

@@ -21,13 +21,13 @@
         public void SelectItem(Item item)
         {
             if (item != null)
-                shopModel.SelectItem(item);
+                shopModel.Inventory.SelectItem(item);
         }
 
         public void Browse()
         {
             // Right now all this function does is select the first item in shopModel.
-            shopModel.SelectItemByIndex(0);
+            shopModel.Inventory.SelectItemByIndex(0);
         }
 
         public void Buy()

@@ -7,6 +7,8 @@
     public class Customer
     {
         private Inventory inventory;
+        public Inventory Inventory => inventory;
+
         public string Name { get; private set; }
         public int Gold { get; private set; }
 
@@ -18,7 +20,7 @@
 
         public void Initialize()
         {
-            inventory = new Inventory(16);
+            inventory = new Inventory(24);
             Gold = 500;
 
             ShopModel.OnBuyEvent += OnBuyItem;
@@ -34,40 +36,19 @@
         public void OnBuyItem(Item item, Customer customer)
         {
             AddGold(-item.Cost);
-            inventory.AddItem(item);
+            inventory.Add(item);
         }
 
         public void OnSellItem(Item item, Customer customer)
         {
             AddGold(item.Cost);
-            inventory.RemoveItem(item);
+            inventory.Remove(item);
         }
 
         private void AddGold(int value)
         {
             Gold += value;
             Gold.Clamp(0, 99999);
-        }
-    }
-
-    public class Inventory
-    {
-        public readonly List<Item> items;
-
-        public Inventory(int size)
-        {
-            items = new List<Item>(size);
-        }
-
-        public void AddItem(Item item)
-        {
-            items.Add(item);
-        }
-
-        public void RemoveItem(Item item)
-        {
-            if (items.Contains(item))
-                items.Remove(item);
         }
     }
 }

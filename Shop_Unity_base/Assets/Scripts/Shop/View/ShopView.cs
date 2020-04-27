@@ -59,7 +59,7 @@
         // Adds one icon for each item in the shop
         private void PopulateItemIconView()
         {
-            foreach (Item item in shopModel.GetItems())
+            foreach (Item item in shopModel.Inventory.GetItems())
                 AddItemToView(item);
         }
 
@@ -85,7 +85,7 @@
 
             ItemContainer itemContainer = newItemIcon.GetComponent<ItemContainer>();
             Debug.Assert(itemContainer != null);
-            bool isSelected = (item == shopModel.GetSelectedItem());
+            bool isSelected = (item == shopModel.Inventory.GetSelectedItem());
             itemContainer.Initialize(item, isSelected);
 
             // Click behaviour for the button is done here. It seemed more convenient to do this inline than in the editor.
