@@ -7,6 +7,7 @@
 
     using Model;
     using Controller;
+    using Model.Items;
 
     // This Class draws the icons for the items in the store
     public class InventoryView : Canvas
@@ -151,11 +152,11 @@
             }
         }
 
-        private void DrawItem(Item item, int iconX, int iconY)
+        private void DrawItem(ITradeable item, int iconX, int iconY)
         {
-            Texture2D iconTexture = GetCachedTexture(item.iconName);
+            Texture2D iconTexture = GetCachedTexture(item.IconName);
             graphics.DrawImage(iconTexture.bitmap, iconX, iconY);
-            graphics.DrawString(item.name, SystemFonts.CaptionFont, Brushes.Black, iconX + 8, iconY + 8);
+            graphics.DrawString(item.Name, SystemFonts.CaptionFont, Brushes.Black, iconX + 8, iconY + 8);
             graphics.DrawString($"Buy: {item.Cost.ToString()}", SystemFonts.CaptionFont, Brushes.Black, iconX + 8, iconY + 24);
             graphics.DrawString($"Sell: {item.Cost.ToString()}", SystemFonts.CaptionFont, Brushes.White, iconX + 8, iconY + 40);
         }

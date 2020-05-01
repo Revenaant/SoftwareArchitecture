@@ -33,7 +33,7 @@ public class ItemContainer : MonoBehaviour
 
         // Set button image
         Image image = GetComponentInChildren<Image>();
-        Sprite sprite = SpriteCache.Get(item.iconName);
+        Sprite sprite = SpriteCache.Get(item.IconName);
 
         if (sprite != null)
             image.sprite = sprite;

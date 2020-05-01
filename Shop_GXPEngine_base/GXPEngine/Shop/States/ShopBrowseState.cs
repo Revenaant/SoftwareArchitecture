@@ -25,7 +25,7 @@ namespace States
             shopController = new ShopController(shopModel);
 
             // Setup model and controller
-            Customer customer = new Customer("Guy");
+            Customer customer = new Customer("Leonard");
             shopModel.SetCustomer(customer);
 
             // Create shop view
@@ -50,9 +50,7 @@ namespace States
         {
             // TODO This kills MVC but temporarily easier.
             if (Input.GetKeyDown(Key.TAB))
-            {
                 buying = !buying;
-            }
 
             if (buying)
                 shopInventoryView.Step();

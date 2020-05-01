@@ -39,10 +39,10 @@ namespace States
             Debug.Assert(shopMessageView != null);
 
             // Setup model and controller
-            Customer customer = new Customer("Guy");
+            Customer customer = new Customer("Leonard");
             shopModel.SetCustomer(customer);
 
-            // Link them (view1 and view2)
+            // Link them
             shopView.Initialize(shopModel, shopController);
             shopMessageView.Initialize(shopModel);
         }

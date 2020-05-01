@@ -40,26 +40,16 @@
         private void PopulateInventory(int itemCount)
         {
             inventory = new Inventory(itemCount);
-            Random random = new Random();
+
+            // TODO: could change to IFactory factory = new ItemFactory<WeaponFactory>(); ?
+            WeaponFactory weaponFactory = new WeaponFactory();
+            PotionFactory potionFactory = new PotionFactory();
 
             for (int index = 0; index < itemCount; index++)
             {
-                Item item;
-                // TODO get random from the max types of items
-                switch (random.Next(0, 3))
-                {
-                    case 0:
-                        item = new Item(name: "Item", iconName: "item", cost: 10);
-                        break;
-                    case 1:
-                        item = new Weapon(name: "Weapon", iconName: "item", cost: 15);
-                        break;
-                    case 2:
-                        item = new Potion(name: "Potion", iconName: "item", cost: 4);
-                        break;
-                    default:
-                        throw new NotImplementedException();
-                }
+                Item item = Utility.Random.Instance.Next(0, 2) == 0
+                    ? (Item)weaponFactory.CreateRandomWeapon()
+                    : (Item)potionFactory.CreateRandomPotion();
 
                 inventory.Add(item);
             }
@@ -96,7 +86,7 @@
             if (customer.Gold < item.Cost)
             {
                 AddMessage("You do not have enough gold to buy that item!");
-                AddMessage("Item cost: " + item.Cost + ", Your gold: " + customer.Gold);
+                AddMessage($"Item cost: {item.Cost}, Your gold: {customer.Gold}");
                 return null;
             }
 
@@ -124,7 +114,7 @@
             AddGold(item.Cost);
             inventory.Remove(item);
 
-            AddMessage($"{customer.Name} purchased [{item.name}] from the shop for -{item.Cost} gold");
+            AddMessage($"{customer.Name} purchased [{item.Name}] from the shop for -{item.Cost} gold");
             AddMessage($"{customer.Name}'s gold: {customer.Gold}");
         }
 
@@ -133,7 +123,7 @@
             AddGold(-item.Cost);
             inventory.Add(item);
 
-            AddMessage($"{customer.Name} sold [{item.name}] to the shop for +{item.Cost} gold");
+            AddMessage($"{customer.Name} sold [{item.Name}] to the shop for +{item.Cost} gold");
             AddMessage($"{customer.Name}'s gold: {customer.Gold}");
         }
 
