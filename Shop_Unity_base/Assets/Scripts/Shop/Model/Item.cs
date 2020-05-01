@@ -1,17 +1,39 @@
-﻿namespace Model
+﻿using Model.Items;
+
+namespace Model
 {
     // This class holds data for an Item. Currently it has a name, an iconName and an amount.
-    public class Item
+    public abstract class Item : IClonable, ITradeable
     {
-        public readonly string name;
-        public readonly string iconName;
-        public int Cost { get; private set; }
+        public enum ItemType { Potion, Weapon }
 
-        public Item(string name, string iconName, int cost)
+        protected string name;
+        protected string iconName;
+        protected int cost;
+
+        protected Item()
+        {
+            iconName = "item";
+        }
+
+        protected Item(string name, int cost)
         {
             this.name = name;
-            this.iconName = iconName;
-            this.Cost = cost;
+            this.cost = cost;
+            iconName = "item";
         }
+
+        protected virtual void CloneFields(Item item)
+        {
+            name = item.name;
+            iconName = item.iconName;
+            cost = item.cost;
+        }
+
+        public string Name => name;
+        public string IconName => iconName;
+        public int Cost => cost;
+
+        public abstract IClonable Clone();
     }
 }

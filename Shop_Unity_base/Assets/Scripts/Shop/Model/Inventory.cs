@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using Utility;
-
-namespace Model
+﻿namespace Model
 {
+    using System.Collections.Generic;
+    using Utility;
+
     // TODO Generics
     public class Inventory
     {
@@ -93,7 +93,7 @@ namespace Model
         /// </summary>
         public List<Item> GetItems()
         {
-            return new List<Item>(Items); // returns a copy of the list, so the original is kept intact, 
+            return new List<Item>(Items); // TODO, this returns a copy of the list, so the original is kept intact, 
                                           // however this is shallow copy of the original list, so changes in 
                                           // the original list will likely influence the copy, apply 
                                           // creational patterns like prototype to fix this. 
