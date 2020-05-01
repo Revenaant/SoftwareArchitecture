@@ -1,55 +1,54 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Model
+﻿namespace Model
 {
+    using System;
+    using System.Collections.Generic;
+    using Utility;
+
     public class Customer
     {
         private Inventory inventory;
+        public Inventory Inventory => inventory;
+
+        public string Name { get; private set; }
         public int Gold { get; private set; }
 
-        public Customer()
+        public Customer(string name)
         {
+            Name = name;
             Initialize();
         }
 
         public void Initialize()
         {
-            inventory = new Inventory(16);
+            inventory = new Inventory(24);
             Gold = 500;
+
+            ShopModel.OnBuyEvent += OnBuyItem;
+            ShopModel.OnSellEvent += OnSellItem;
         }
 
-        public void Purchase(Item item)
+        ~Customer()
         {
-            Gold = Math.Max(Gold - item.Cost, 0);
-            inventory.AddItem(item);
+            ShopModel.OnBuyEvent -= OnBuyItem;
+            ShopModel.OnSellEvent -= OnSellItem;
         }
 
-        public void Sell(Item item)
+        public void OnBuyItem(Item item, Customer customer)
         {
-            Gold += item.Cost;
-            inventory.RemoveItem(item);
-        }
-    }
-
-    public class Inventory
-    {
-        public readonly List<Item> items;
-
-        public Inventory(int size)
-        {
-            items = new List<Item>(size);
+            AddGold(-item.Cost);
+            inventory.Add(item);
         }
 
-        public void AddItem(Item item)
+        public void OnSellItem(Item item, Customer customer)
         {
-            items.Add(item);
+            AddGold(item.Cost);
+            inventory.Remove(item);
         }
 
-        public void RemoveItem(Item item)
+        private void AddGold(int value)
         {
-            if (items.Contains(item))
-                items.Remove(item);
+            Gold += value;
+            Gold.Clamp(0, 99999);
         }
     }
 }

@@ -10,41 +10,54 @@ namespace States
     public class ShopBrowseState : GameObject
     {
         private ShopController shopController;
-        private ShopView shopView;
+        private InventoryView shopInventoryView;
+        private InventoryView customerInventoryView;
         private ShopMessageView shopMessageView;
 
-        //------------------------------------------------------------------------------------------------------------------------
-        //                                                  ShopBrowseState()
-        //------------------------------------------------------------------------------------------------------------------------
+        private bool buying = true;
+
         public ShopBrowseState()
         {
-            //create shop
-            ShopModel shop = new ShopModel();
+            // Create shop
+            ShopModel shopModel = new ShopModel();
 
-            //create controller
-            shopController = new ShopController(shop);
+            // Create controller
+            shopController = new ShopController(shopModel);
 
-            //create shop view
-            shopView = new ShopView(shop, shopController);
-            AddChild(shopView);
-            Helper.AlignToCenter(shopView, true, true);
+            // Setup model and controller
+            Customer customer = new Customer("Guy");
+            shopModel.SetCustomer(customer);
 
-            //create message view
-            shopMessageView = new ShopMessageView(shop);
+            // Create shop view
+            shopInventoryView = new InventoryView(shopModel.Inventory, shopController, System.Drawing.Color.LightGoldenrodYellow);
+            shopInventoryView.SetViewScreenPosition(0.5f, 0.25f);
+            AddChild(shopInventoryView);
+            Helper.AlignToCenter(shopInventoryView, true, false);
+
+            // Create customer inventory view
+            customerInventoryView = new InventoryView(customer.Inventory, shopController, System.Drawing.Color.RosyBrown);
+            customerInventoryView.SetViewScreenPosition(0.5f, 0.95f);
+            AddChild(customerInventoryView);
+            Helper.AlignToCenter(customerInventoryView, true, false);
+
+            // Create message view
+            shopMessageView = new ShopMessageView(shopModel);
             AddChild(shopMessageView);
             Helper.AlignToCenter(shopMessageView, true, false);
-
         }
 
-        //------------------------------------------------------------------------------------------------------------------------
-        //                                                  Step()
-        //------------------------------------------------------------------------------------------------------------------------
-        //update the views
         public void Step()
         {
-            shopView.Step();
-            shopMessageView.Step();
-        }
+            // TODO This kills MVC but temporarily easier.
+            if (Input.GetKeyDown(Key.TAB))
+            {
+                buying = !buying;
+            }
 
+            if (buying)
+                shopInventoryView.Step();
+            else
+                customerInventoryView.Step();
+        }
     }
 }
