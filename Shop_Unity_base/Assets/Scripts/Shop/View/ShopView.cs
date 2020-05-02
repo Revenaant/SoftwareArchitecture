@@ -7,6 +7,7 @@
 
     using Model;
     using Controller;
+    using Model.Items;
 
     public class ShopView : MonoBehaviour
     {
@@ -23,30 +24,26 @@
         private Button sellButton;
 
         private ShopModel shopModel;
-        private ShopController shopController;
+        private InventoryController inventoryController;
 
         // This method is used to initialize the view, as we can't use a constructor (monobehaviour)
-        public void Initialize(ShopModel shopModel, ShopController shopController)
+        public void Initialize(ShopModel shopModel, InventoryController shopController)
         {
             this.shopModel = shopModel;
-            this.shopController = new ShopController(shopModel);
-
-            ShopModel.OnBuyEvent += OnShopUpdated;
-            ShopModel.OnSellEvent += OnShopUpdated;
+            this.inventoryController = shopController;
 
             PopulateItemIconView();
             InitializeButtons();
         }
 
-        private void OnShopUpdated(Item item, Customer customer)
+        public void RegisterEvents(ITrader trader)
         {
-            RepopulateItemIconView();
+            trader.OnItemSoldEvent += OnShopUpdated;
         }
 
-        private void OnDestroy()
+        private void OnShopUpdated(ITradeable tradeable, ITrader trader)
         {
-            ShopModel.OnBuyEvent -= OnShopUpdated;
-            ShopModel.OnSellEvent -= OnShopUpdated;
+            RepopulateItemIconView();
         }
 
         // Clears the icon gridview and repopulates it with new icons (updates the visible icons)
@@ -93,7 +90,7 @@
             itemButton.onClick.AddListener(
                 delegate
                 {
-                    shopController.SelectItem(item);
+                    inventoryController.SelectItem(item);
 
                     // TODO We need an Event system instead of this
                     RepopulateItemIconView();
@@ -107,7 +104,7 @@
             buyButton.onClick.AddListener(
                 delegate
                 {
-                    shopController.Buy();
+                    inventoryController.Buy();
 
                     // TODO We need an Event system instead of this
                     RepopulateItemIconView();
@@ -116,7 +113,7 @@
             sellButton.onClick.AddListener(
                 delegate
                 {
-                    shopController.Sell();
+                    inventoryController.Sell();
 
                     // TODO We need an Event system instead of this
                     RepopulateItemIconView();

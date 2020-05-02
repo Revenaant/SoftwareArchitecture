@@ -2,6 +2,7 @@
 using System.Drawing;
 using GXPEngine;
 using Model;
+using Model.Items;
 
 namespace View
 {
@@ -17,18 +18,17 @@ namespace View
             this.shop = shop;
 
             DrawLogElements();
-
-            ShopModel.OnBuyEvent += OnShopUpdated;
-            ShopModel.OnSellEvent += OnShopUpdated;
         }
 
-        ~ShopMessageView()
+        public void RegisterEvents(ITrader trader, ITrader other)
         {
-            ShopModel.OnBuyEvent -= OnShopUpdated;
-            ShopModel.OnSellEvent -= OnShopUpdated;
+            trader.OnItemSoldEvent += OnShopUpdated;
+            other.OnItemSoldEvent += OnShopUpdated;
         }
 
-        private void OnShopUpdated(Item item, Customer customer)
+
+        // TODO make this function an Interface for all Views
+        private void OnShopUpdated(ITradeable tradeable, ITrader trader)
         {
             DrawLogElements();
         }

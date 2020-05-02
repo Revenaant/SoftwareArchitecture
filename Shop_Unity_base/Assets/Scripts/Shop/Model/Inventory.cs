@@ -32,6 +32,16 @@
                 items.Remove(item);
         }
 
+        public void ClearInventory()
+        {
+            items.Clear();
+        }
+
+        public void SortInventory()
+        {
+            items.Sort();
+        }
+
         public Item GetItem(Item item)
         {
             if (!items.Contains(item))
@@ -46,8 +56,7 @@
                 return null;
 
             // Enforce valid indexes
-            index.Clamp(0, ItemCount - 1);
-            return items[index];
+            return items[index.Clamp(0, ItemCount - 1)];
         }
 
         // TODO test if it doesn't break without Contains
