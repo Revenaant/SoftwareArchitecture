@@ -59,10 +59,14 @@
             return items[index.Clamp(0, ItemCount - 1)];
         }
 
-        // TODO test if it doesn't break without Contains
         public int IndexOfItem(Item item)
         {
-            return items.IndexOf(item);
+            int index = items.IndexOf(item);
+
+            if (index < 0)
+                throw new System.IndexOutOfRangeException($"The item collection does not contain an index for item {item}");
+
+            return index;
         }
 
         // TODO should these methods go in a separate "controller" type class?

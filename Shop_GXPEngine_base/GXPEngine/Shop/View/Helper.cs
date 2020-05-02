@@ -2,7 +2,7 @@
 {
     using GXPEngine;
 
-    // This contains useful functions for doing things
+    // This contains useful functions
     public static class Helper
     {
         //------------------------------------------------------------------------------------------------------------------------
