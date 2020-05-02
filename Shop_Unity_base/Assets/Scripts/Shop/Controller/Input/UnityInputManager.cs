@@ -12,25 +12,36 @@
 
         private void BindCommands()
         {
-            SetKeyCodeToCommand(KeyCode.Space, new BuyCommand());
-            SetKeyCodeToCommand(KeyCode.Backspace, new SellCommand());
+            SetKeyCodeToCommand(KeyCode.Space, new SellCommand());
             SetKeyCodeToCommand(KeyCode.C, new ClearCommand());
             SetKeyCodeToCommand(KeyCode.S, new SortCommand());
             SetKeyCodeToCommand(KeyCode.R, new RestockCommand());
         }
 
-        public void Update(Inventory inventory)
-        {
-            ICommand input = HandleInput();
-            input?.Execute(inventory);
-        }
-
         public override ICommand HandleInput()
         {
-            if (Input.GetKeyDown(KeyCode.Space))
-                return keyCodeToCommand[KeyCode.Space];
+            ICommand frameInput = null;
 
-            return null;
+            // This implementation has an order priority to the Input pressed in the same frame
+            foreach (KeyCode key in keyCodeToCommand.Keys)
+                frameInput = GetCommandDown(key);
+
+            return frameInput;
+        }
+
+        protected override bool GetKey(KeyCode key)
+        {
+            return Input.GetKey(key);
+        }
+
+        protected override bool GetKeyDown(KeyCode key)
+        {
+            return Input.GetKeyDown(key);
+        }
+
+        protected override bool GetKeyUp(KeyCode key)
+        {
+            return Input.GetKeyUp(key);
         }
     }
 }

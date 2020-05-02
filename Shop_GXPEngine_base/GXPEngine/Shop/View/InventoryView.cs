@@ -16,17 +16,17 @@ namespace View
         const int SPACING = 80;
         const int MARGIN = 18;
 
-        private Inventory inventory;
-        private ShopController shopController;
+        private InventoryController inventoryController;
+        private GXPInputManager inputManager;
         private Color InventoryColor;
 
         // The icon cache is built in here, that violates the S.R. principle.
         private Dictionary<string, Texture2D> iconCache;
 
-        public InventoryView(Inventory inventory, ShopController shopController, Color color) : base(498, 340)
+        public InventoryView(InventoryController inventoryController, GXPInputManager inputManager, Color color) : base(498, 340)
         {
-            this.inventory = inventory;
-            this.shopController = shopController;
+            this.inventoryController = inventoryController;
+            this.inputManager = inputManager;
             this.InventoryColor = color;
 
             iconCache = new Dictionary<string, Texture2D>();
@@ -36,26 +36,18 @@ namespace View
 
             DrawBackground();
             DrawItems();
-
-            ShopModel.OnBuyEvent += OnShopUpdated;
-            ShopModel.OnSellEvent += OnShopUpdated;
         }
 
-        ~InventoryView()
+        public void RegisterEvents(ITrader trader, ITrader other)
         {
-            ShopModel.OnBuyEvent -= OnShopUpdated;
-            ShopModel.OnSellEvent -= OnShopUpdated;
+            trader.OnItemSoldEvent += OnShopUpdated;
+            other.OnItemSoldEvent += OnShopUpdated;
         }
+
         public void SetViewScreenPosition(float xPercentage, float yPercentage)
         {
             x = (game.width - width) * xPercentage;
             y = (game.height - height) * yPercentage;
-        }
-
-        private void OnShopUpdated(Item item, Customer customer)
-        {
-            DrawBackground();
-            DrawItems();
         }
 
         public void Step()
@@ -63,40 +55,31 @@ namespace View
             DrawBackground();
             DrawItems();
             HandleNavigation();
+
+            inputManager.Update(inventoryController);
+        }
+
+        private void OnShopUpdated(ITradeable tradeable, ITrader trader)
+        {
+            DrawBackground();
+            DrawItems();
         }
 
         private void HandleNavigation()
         {
             if (Input.GetKeyDown(Key.LEFT))
-            {
                 MoveSelection(-1, 0);
-            }
             if (Input.GetKeyDown(Key.RIGHT))
-            {
                 MoveSelection(1, 0);
-            }
             if (Input.GetKeyDown(Key.UP))
-            {
                 MoveSelection(0, -1);
-            }
             if (Input.GetKeyDown(Key.DOWN))
-            {
                 MoveSelection(0, 1);
-            }
-
-            if (Input.GetKeyDown(Key.SPACE))
-            {
-                shopController.Buy();
-            }
-            if (Input.GetKeyDown(Key.BACKSPACE))
-            {
-                shopController.Sell();
-            }
         }
 
-        private void MoveSelection(int moveX, int moveY)
+        public void MoveSelection(int moveX, int moveY)
         {
-            int itemIndex = inventory.GetSelectedItemIndex();
+            int itemIndex = inventoryController.GetSelectedItemIndex();
             int currentSelectionX = GetColumnByIndex(itemIndex);
             int currentSelectionY = GetRowByIndex(itemIndex);
             int requestedSelectionX = currentSelectionX + moveX;
@@ -107,10 +90,10 @@ namespace View
             {
                 // Check vertical boundaries
                 int newItemIndex = GetIndexFromGridPosition(requestedSelectionX, requestedSelectionY);
-                if (newItemIndex >= 0 && newItemIndex <= inventory.ItemCount)
+                if (newItemIndex >= 0 && newItemIndex <= inventoryController.GetItemCount())
                 {
-                    Item item = inventory.GetItemByIndex(newItemIndex);
-                    shopController.SelectItem(item);
+                    Item item = inventoryController.GetItemByIndex(newItemIndex);
+                    inventoryController.SelectItem(item);
                 }
             }
         }
@@ -138,14 +121,14 @@ namespace View
 
         private void DrawItems()
         {
-            List<Item> items = inventory.GetItems();
+            List<Item> items = inventoryController.Trader.Inventory.GetItems();
             for (int index = 0; index < items.Count; index++)
             {
                 Item item = items[index];
                 int iconX = GetColumnByIndex(index) * SPACING + MARGIN;
                 int iconY = GetRowByIndex(index) * SPACING + MARGIN;
 
-                if (item == inventory.GetSelectedItem())
+                if (item == inventoryController.Trader.Inventory.GetSelectedItem())
                     DrawSelectedItem(item, iconX, iconY);
                 else
                     DrawItem(item, iconX, iconY);

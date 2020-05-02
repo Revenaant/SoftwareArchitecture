@@ -1,54 +1,47 @@
 ﻿namespace Controller
 {
-    using Model;
-
     public interface ICommand
     {
-        void Execute(Inventory inventory);
+        void Execute(InventoryController controller);
+    }
+
+    public class NullCommand : ICommand
+    {
+        void ICommand.Execute(InventoryController controller)
+        {
+            // Do nothing
+        }
     }
 
     public class ClearCommand : ICommand
     {
-        void ICommand.Execute(Inventory inventory)
+        void ICommand.Execute(InventoryController controller)
         {
-            //inventory.Clear;
-            throw new System.NotImplementedException();
+            controller.ClearInventory();
         }
     }
 
     public class SortCommand : ICommand
     {
-        void ICommand.Execute(Inventory inventory)
+        void ICommand.Execute(InventoryController controller)
         {
-            //inventory.Sort;
-            throw new System.NotImplementedException();
+            controller.SortInventory();
         }
     }
 
     public class RestockCommand : ICommand
     {
-        void ICommand.Execute(Inventory inventory)
+        void ICommand.Execute(InventoryController controller)
         {
-            //inventory.Restock;
-            throw new System.NotImplementedException();
-        }
-    }
-
-    public class BuyCommand : ICommand
-    {
-        void ICommand.Execute(Inventory inventory)
-        {
-            //inventory.Buy;
-            throw new System.NotImplementedException();
+            controller.RestockInventory();
         }
     }
 
     public class SellCommand : ICommand
     {
-        void ICommand.Execute(Inventory inventory)
+        void ICommand.Execute(InventoryController controller)
         {
-            //inventory.Sell;
-            throw new System.NotImplementedException();
+            controller.Sell();
         }
     }
 }

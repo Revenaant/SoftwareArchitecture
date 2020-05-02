@@ -1,10 +1,15 @@
-﻿using System;
-
-namespace Model.Items
+﻿namespace Model.Items
 {
-    interface ITrader
+    public interface ITrader
     {
-        void Buy(ITrader other, ITradeable tradeable);
-        void Sell(ITrader other, ITradeable tradeable);
+        event Events.SellDelegate OnItemSoldEvent;
+
+        string Name { get; }
+        int Gold { get; }
+        Inventory Inventory { get; }
+
+        void Sell(ITrader buyer);
+        void OnItemBought(ITradeable tradeable, ITrader seller);
+        void Restock();
     }
 }

@@ -1,8 +1,9 @@
-﻿namespace Model
+﻿using Model.Items;
+
+namespace Model
 {
     public class Events
     {
-        public delegate void BuyDelegate(Item item, Customer customer);
-        public delegate void SellDelegate(Item item, Customer customer);
+        public delegate void SellDelegate(ITradeable tradeable, ITrader trader);
     }
 }

@@ -13,9 +13,43 @@
 
         public abstract ICommand HandleInput();
 
+        public virtual void Update(InventoryController controller)
+        {
+            ICommand input = HandleInput();
+            input?.Execute(controller);
+        }
+
         protected void SetKeyCodeToCommand(T keycode, ICommand command)
         {
             keyCodeToCommand.Add(keycode, command);
         }
+
+        protected ICommand GetCommand(T key)
+        {
+            if (!GetKey(key))
+                return null;
+
+            return keyCodeToCommand[key];
+        }
+
+        protected ICommand GetCommandDown(T key)
+        {
+            if (!GetKeyDown(key))
+                return null;
+
+            return keyCodeToCommand[key];
+        }
+
+        protected ICommand GetCommandUp(T key)
+        {
+            if (!GetKeyUp(key))
+                return null;
+
+            return keyCodeToCommand[key];
+        }
+
+        protected abstract bool GetKey(T key);
+        protected abstract bool GetKeyDown(T key);
+        protected abstract bool GetKeyUp(T key);
     }
 }

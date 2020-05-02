@@ -7,34 +7,39 @@
 
     // This class holds the model of our Shop. It contains an ItemList. In its current setup, view and controller need to get
     // data via polling. Advisable is, to set up an event system for better integration with View and Controller.
-    public class ShopModel
+    public class ShopModel : ITrader
     {
-        public static event Events.BuyDelegate OnBuyEvent;
-        public static event Events.SellDelegate OnSellEvent;
-
         private const int STARTING_GOLD = 1000;
-        private Customer customer;
-        private int gold;
 
+        private ITrader otherTrader;
         private const int MAX_MESSAGES_IN_QUEUE = 4;
         private Queue<string> messages = new Queue<string>();
 
+        public string Name => "Shop";
+
+        private int gold;
+        public int Gold => gold;
+
         private Inventory inventory;
         public Inventory Inventory => inventory;
+
+        private Events.SellDelegate onItemSold;
+        public event Events.SellDelegate OnItemSoldEvent
+        {
+            add { onItemSold += value; }
+            remove { onItemSold -= value; }
+        }
 
         public ShopModel()
         {
             PopulateInventory(24);
             gold = STARTING_GOLD;
-
-            OnBuyEvent += OnCustomerBuyItem;
-            OnSellEvent += OnCustomerSellItem;
         }
 
         ~ShopModel()
         {
-            OnBuyEvent -= OnCustomerBuyItem;
-            OnSellEvent -= OnCustomerSellItem;
+            otherTrader.OnItemSoldEvent -= ((ITrader)this).OnItemBought;
+            onItemSold = null;
         }
 
         private void PopulateInventory(int itemCount)
@@ -74,63 +79,78 @@
                 messages.Dequeue();
         }
 
-        public void SetCustomer(Customer customer)
+        public void SetOtherTrader(ITrader trader)
         {
-            this.customer = customer;
-        }
+            if (otherTrader != null)
+                otherTrader.OnItemSoldEvent -= ((ITrader)this).OnItemBought;
 
-        public Item Buy()
-        {
-            Item item = inventory.GetSelectedItem();
+            otherTrader = trader;
 
-            if (customer.Gold < item.Cost)
-            {
-                AddMessage("You do not have enough gold to buy that item!");
-                AddMessage($"Item cost: {item.Cost}, Your gold: {customer.Gold}");
-                return null;
-            }
-
-            OnBuyEvent?.Invoke(item, customer);
-            return item;
-        }
-
-        // We assume that the customer has the same type of items that the shop has
-        public void Sell()
-        {
-            Item item = inventory.GetSelectedItem();
-
-            if (gold >= 0 && gold < item.Cost)
-            {
-                AddMessage("The shop does not have enough gold to buy that item!");
-                return;
-            }
-
-            OnSellEvent?.Invoke(item, customer);
+            otherTrader.OnItemSoldEvent += ((ITrader)this).OnItemBought;
         }
 
         // TODO sent messages have old data
-        private void OnCustomerBuyItem(Item item, Customer customer)
+        private void OnCustomerBuyItem(Item item, ITrader other)
         {
             AddGold(item.Cost);
             inventory.Remove(item);
 
-            AddMessage($"{customer.Name} purchased [{item.Name}] from the shop for -{item.Cost} gold");
-            AddMessage($"{customer.Name}'s gold: {customer.Gold}");
+            AddMessage($"{otherTrader.Name} purchased [{item.Name}] from the shop for -{item.Cost} gold");
+            AddMessage($"{otherTrader.Name}'s gold: {otherTrader.Gold}");
         }
 
-        private void OnCustomerSellItem(Item item, Customer customer)
+        private void OnCustomerSellItem(Item item, ITrader other)
         {
             AddGold(-item.Cost);
             inventory.Add(item);
 
-            AddMessage($"{customer.Name} sold [{item.Name}] to the shop for +{item.Cost} gold");
-            AddMessage($"{customer.Name}'s gold: {customer.Gold}");
+            AddMessage($"{otherTrader.Name} sold [{item.Name}] to the shop for +{item.Cost} gold");
+            AddMessage($"{otherTrader.Name}'s gold: {otherTrader.Gold}");
         }
 
         private void AddGold(int value)
         {
             gold += value;
             gold.Clamp(0, 99999);
+        }
+
+        void ITrader.Sell(ITrader buyer)
+        {
+            ITradeable tradeable = inventory.GetSelectedItem();
+
+            if (buyer.Gold <= 0 || buyer.Gold < tradeable.Cost)
+            {
+                // TODO make this static in MessageView
+                AddMessage($"Trader {buyer.GetType().Name} does not have enough gold to buy that!");
+                AddMessage($"{buyer.GetType().Name}'s gold: {buyer.Gold}, item cost: {tradeable.Cost}");
+                return;
+            }
+
+            // TODO add Clone so it can be purchased multiple times
+            AddGold(tradeable.Cost);
+            onItemSold?.Invoke(tradeable, buyer);
+            Inventory.Remove((Item)tradeable);
+
+            AddMessage($"Trader {buyer.GetType().Name} just bought [{tradeable.Name}] for {tradeable.Cost} Gold from {this.GetType().Name}!");
+            AddMessage($"{buyer.GetType().Name}'s remaining gold: {buyer.Gold}");
+
+            // if(--Stock<tradable> <= 0)
+            //  Inventory.Remove(tradeable);
+        }
+
+        void ITrader.OnItemBought(ITradeable tradeable, ITrader seller)
+        {
+            AddGold(-tradeable.Cost);
+            Inventory.Add((Item)tradeable);
+
+            AddMessage($"Trader {this.GetType().Name} just bought [{tradeable.Name}] for {tradeable.Cost} Gold from {seller.GetType().Name}!");
+            AddMessage($"{seller.GetType().Name}'s remaining gold: {seller.Gold}");
+        }
+
+        // TODO
+        void ITrader.Restock()
+        {
+            throw new NotImplementedException();
         }
     }
 }
