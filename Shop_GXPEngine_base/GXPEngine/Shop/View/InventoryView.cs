@@ -1,4 +1,4 @@
-﻿namespace View
+namespace View
 {
     using System.Collections.Generic;
     using System.Drawing;
