@@ -14,7 +14,6 @@
             this.shopModel = shopModel;
 
             RegisterEvents(otherTrader);
-            RegisterEvents(otherTrader);
         }
 
         private void RegisterEvents(ITrader trader)
