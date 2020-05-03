@@ -41,38 +41,42 @@ namespace States
 
         public ShopBrowseState()
         {
+            Initialize();
+        }
+
+        private void Initialize()
+        {
             // Create models
-            ShopModel shopModel = new ShopModel();
-            Customer customer = new Customer("Leonard");
+            TraderModel shopModel = new ShopModel();
+            TraderModel customer = new CustomerModel("Leonard", 300);
 
             // Create controller
             shopController = new InventoryController(shopModel, customer);
             customerController = new InventoryController(customer, shopModel);
             inputManager = new GXPInputManager();
 
-            // SetTrade
-            shopModel.SetOtherTrader(customer);
-            customer.SetOtherTrader(shopModel);
-
             // Create shop view
             shopInventoryView = new InventoryView(shopController, inputManager, System.Drawing.Color.LightGoldenrodYellow);
             shopInventoryView.SetViewScreenPosition(0.5f, 0.25f);
             AddChild(shopInventoryView);
             Helper.AlignToCenter(shopInventoryView, true, false);
-            shopInventoryView.RegisterEvents(shopModel, customer);
 
             // Create customer inventory view
             customerInventoryView = new InventoryView(customerController, inputManager, System.Drawing.Color.RosyBrown);
             customerInventoryView.SetViewScreenPosition(0.5f, 0.95f);
             AddChild(customerInventoryView);
             Helper.AlignToCenter(customerInventoryView, true, false);
-            customerInventoryView.RegisterEvents(customer, shopModel);
 
             // Create message view
-            shopMessageView = new ShopMessageView(shopModel);
+            shopMessageView = new ShopMessageView();
             AddChild(shopMessageView);
             Helper.AlignToCenter(shopMessageView, true, false);
-            shopMessageView.RegisterEvents(shopModel, customer);
+
+            // Register observers
+            shopModel.SubscribeToObservable(customer);
+            customer.SubscribeToObservable(shopModel);
+            RegisterViewsToTradeObservables(customer);
+            RegisterViewsToTradeObservables(shopModel);
         }
 
         public void Step()
@@ -88,6 +92,13 @@ namespace States
         private void ToggleInventories()
         {
             buying = !buying;
+        }
+
+        private void RegisterViewsToTradeObservables(IObservable<TradeNotification> observable)
+        {
+            shopInventoryView.SubscribeToObservable(observable);
+            customerInventoryView.SubscribeToObservable(observable);
+            shopMessageView.SubscribeToObservable(observable);
         }
     }
 }

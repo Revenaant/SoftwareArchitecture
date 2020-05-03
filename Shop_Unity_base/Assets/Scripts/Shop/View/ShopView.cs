@@ -8,8 +8,9 @@
     using Model;
     using Controller;
     using Model.Items;
+    using System;
 
-    public class ShopView : MonoBehaviour
+    public class ShopView : MonoBehaviour, IObserver<TradeNotification>
     {
         [SerializeField]
         private LayoutGroup itemLayoutGroup;
@@ -25,6 +26,7 @@
 
         private ShopModel shopModel;
         private InventoryController inventoryController;
+        private IDisposable unsubscriber;
 
         // This method is used to initialize the view, as we can't use a constructor (monobehaviour)
         public void Initialize(ShopModel shopModel, InventoryController shopController)
@@ -36,12 +38,12 @@
             InitializeButtons();
         }
 
-        public void RegisterEvents(ITrader trader)
+        public void SubscribeToObservable(IObservable<TradeNotification> observable)
         {
-            trader.OnItemSoldEvent += OnShopUpdated;
+            unsubscriber = observable?.Subscribe(this);
         }
 
-        private void OnShopUpdated(ITradeable tradeable, ITrader trader)
+        private void OnShopUpdated()
         {
             RepopulateItemIconView();
         }
@@ -104,21 +106,27 @@
             buyButton.onClick.AddListener(
                 delegate
                 {
-                    inventoryController.Buy();
-
-                    // TODO We need an Event system instead of this
-                    RepopulateItemIconView();
-                }
-            );
-            sellButton.onClick.AddListener(
-                delegate
-                {
                     inventoryController.Sell();
 
                     // TODO We need an Event system instead of this
                     RepopulateItemIconView();
                 }
             );
+        }
+
+        void IObserver<TradeNotification>.OnNext(TradeNotification value)
+        {
+            OnShopUpdated();
+        }
+
+        void IObserver<TradeNotification>.OnCompleted()
+        {
+            unsubscriber.Dispose();
+        }
+
+        void IObserver<TradeNotification>.OnError(Exception error)
+        {
+            throw new NotSupportedException("There was an error sending data, this method should never be called");
         }
     }
 }

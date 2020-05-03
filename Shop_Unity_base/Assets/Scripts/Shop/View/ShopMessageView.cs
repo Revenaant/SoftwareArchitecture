@@ -4,7 +4,7 @@
     using Model;
     using Model.Items;
 
-    public class ShopMessageView : MonoBehaviour
+    public class ShopMessageView : MonoBehaviour, IObserver<TradeNotification>
     {
         private ShopModel shopModel;
 
@@ -27,12 +27,27 @@
         // This method polls the shop for messages and prints them. Since the shop caches the messages, it prints the same
         // message each frame. An event system would work better.
 
-        private void OnShopUpdated(ITradeable tradeable, ITrader trader)
+        private void OnShopUpdated()
         {
-            string[] messages = shopModel.GetMessages();
+            string[] messages = TradeLog.GetMessages();
 
             for (int i = 0; i < messages.Length; i++)
                 Debug.Log(messages[i]);
+        }
+
+        void IObserver<TradeNotification>.OnNext(TradeNotification value)
+        {
+            OnShopUpdated();
+        }
+
+        void IObserver<TradeNotification>.OnCompleted()
+        {
+            unsubscriber.Dispose();
+        }
+
+        void IObserver<TradeNotification>.OnError(Exception error)
+        {
+            throw new NotSupportedException("There was an error sending data, this method should never be called");
         }
     }
 }

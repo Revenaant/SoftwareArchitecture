@@ -27,7 +27,7 @@ namespace Model.Items
 
         public Potion CreateRandomPotion()
         {
-            int randomType = Utility.Random.Instance.Next(0, Enum.GetNames(typeof(PotionType)).Length);
+            int randomType = Utility.Random.Get(0, Enum.GetNames(typeof(PotionType)).Length);
             return CreatePotion((PotionType)randomType);
         }
 

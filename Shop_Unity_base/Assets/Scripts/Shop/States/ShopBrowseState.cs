@@ -28,7 +28,7 @@ namespace States
         {
             // Set up the Models
             shopModel = new ShopModel();
-            Customer customer = new Customer("Leonard");
+            CustomerModel customer = new CustomerModel("Leonard", 500);
 
             // Set up Controllers
 
@@ -41,8 +41,6 @@ namespace States
             // Get mesageview from children
             shopMessageView = GetComponentInChildren<ShopMessageView>();
             Debug.Assert(shopMessageView != null);
-
-            shopModel.SetOtherTrader(customer);
 
             // Link them
             shopView.Initialize(shopModel, inventoryController);
