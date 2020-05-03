@@ -8,19 +8,22 @@ namespace View
     using Model;
     using Controller;
     using Model.Items;
+    using System;
 
     // This Class draws the icons for the items in the store
-    public class InventoryView : Canvas
+    public class InventoryView : Canvas, IObserver<TradeNotification>
     {
         const int COLUMNS = 6;
         const int SPACING = 80;
         const int MARGIN = 18;
 
+        private IDisposable unsubscriber;
+
         private InventoryController inventoryController;
         private GXPInputManager inputManager;
         private Color InventoryColor;
 
-        // The icon cache is built in here, that violates the S.R. principle.
+        // TODO The icon cache is built in here, that violates the S.R. principle.
         private Dictionary<string, Texture2D> iconCache;
 
         public InventoryView(InventoryController inventoryController, GXPInputManager inputManager, Color color) : base(498, 340)
@@ -38,10 +41,9 @@ namespace View
             DrawItems();
         }
 
-        public void RegisterEvents(ITrader trader, ITrader other)
+        public void SubscribeToObservable(IObservable<TradeNotification> observable)
         {
-            trader.OnItemSoldEvent += OnShopUpdated;
-            other.OnItemSoldEvent += OnShopUpdated;
+            unsubscriber = observable?.Subscribe(this);
         }
 
         public void SetViewScreenPosition(float xPercentage, float yPercentage)
@@ -59,7 +61,7 @@ namespace View
             inputManager.Update(inventoryController);
         }
 
-        private void OnShopUpdated(ITradeable tradeable, ITrader trader)
+        private void OnShopUpdated()
         {
             DrawBackground();
             DrawItems();
@@ -156,6 +158,21 @@ namespace View
                 iconCache.Add(filename, new Texture2D("media/" + filename + ".png"));
 
             return iconCache[filename];
+        }
+
+        void IObserver<TradeNotification>.OnNext(TradeNotification value)
+        {
+            OnShopUpdated();
+        }
+
+        void IObserver<TradeNotification>.OnCompleted()
+        {
+            unsubscriber.Dispose();
+        }
+
+        void IObserver<TradeNotification>.OnError(Exception error)
+        {
+            throw new NotSupportedException("There was an error sending data, this method should never be called");
         }
     }
 }

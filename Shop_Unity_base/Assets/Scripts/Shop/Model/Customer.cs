@@ -1,81 +1,30 @@
 ﻿namespace Model
 {
-    using Model.Items;
-    using System;
-    using Utility;
-
-    public class Customer : ITrader
+    public class CustomerModel : TraderModel
     {
-        private ITrader otherTrader;
+        private const int INVENTORY_CAPACITY = 24;
 
-        private Inventory inventory;
-        public Inventory Inventory => inventory;
-
-        public string Name { get; private set; }
-        public int Gold { get; private set; }
-
-        private Events.SellDelegate onItemSold;
-        public event Events.SellDelegate OnItemSoldEvent
+        public CustomerModel(string name, int startingGold) : base()
         {
-            add { onItemSold += value; }
-            remove { onItemSold -= value; }
+            Initialize(name, startingGold, INVENTORY_CAPACITY);
         }
 
-        public Customer(string name)
+        protected override void Initialize(string name, int startingGold, int inventoryCapacity)
         {
             Name = name;
-            Initialize();
+            Gold = startingGold;
+            Inventory = new Inventory(inventoryCapacity);
         }
 
-        public void Initialize()
+        public override void Restock()
         {
-            inventory = new Inventory(24);
-            Gold = 500;
+            AddGold(GetGoldFromAdventure());
         }
 
-        ~Customer()
+        // Simulate adventuring functionality
+        private int GetGoldFromAdventure()
         {
-            otherTrader.OnItemSoldEvent -= ((ITrader)this).OnItemBought;
-            onItemSold = null;
-        }
-
-        public void SetOtherTrader(ITrader trader)
-        {
-            if (otherTrader != null)
-                otherTrader.OnItemSoldEvent -= ((ITrader)this).OnItemBought;
-
-            otherTrader = trader;
-
-            otherTrader.OnItemSoldEvent += ((ITrader)this).OnItemBought;
-        }
-
-        private void AddGold(int value)
-        {
-            Gold += value;
-            Gold.Clamp(0, 99999);
-        }
-
-        void ITrader.Sell(ITrader buyer)
-        {
-            ITradeable tradeable = inventory.GetSelectedItem();
-
-            if (buyer.Gold <= 0 || buyer.Gold < tradeable.Cost)
-                return;
-
-            AddGold(tradeable.Cost);
-            Inventory.Remove((Item)tradeable);
-            onItemSold?.Invoke(tradeable, buyer);
-        }
-
-        void ITrader.OnItemBought(ITradeable tradeable, ITrader seller)
-        {
-            AddGold(-tradeable.Cost);
-            Inventory.Add((Item)tradeable);
-        }
-
-        void ITrader.Restock()
-        {
-            // Uhm.. Go on an adventure?
+            return Utility.Random.Get(200, 350);
         }
     }
 }

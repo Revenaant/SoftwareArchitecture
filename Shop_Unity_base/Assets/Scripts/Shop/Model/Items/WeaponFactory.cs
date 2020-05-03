@@ -30,7 +30,7 @@
 
         public Weapon CreateRandomWeapon()
         {
-            int randomType = Utility.Random.Instance.Next(0, Enum.GetNames(typeof(WeaponType)).Length);
+            int randomType = Utility.Random.Get(0, Enum.GetNames(typeof(WeaponType)).Length);
             return CreateWeapon((WeaponType)randomType);
         }
 
