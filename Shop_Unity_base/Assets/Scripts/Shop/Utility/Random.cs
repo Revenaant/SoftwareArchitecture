@@ -2,16 +2,22 @@
 {
     public static class Random
     {
-        private static System.Random instance;
-        public static System.Random Instance
-        {
-            get
-            {
-                if (instance == null)
-                    instance = new System.Random();
+        static private System.Random random = new System.Random();
 
-                return instance;
-            }
+        /// <summary>
+        /// Gets a random value between the specified min (inclusive) and max (exclusive).
+        /// </summary>
+        public static int Get(int min, int max)
+        {
+            return random.Next(min, max);
+        }
+
+        /// <summary>
+        /// Gets a random value between the specified min (inclusive) and max (exclusive).
+        /// </summary>
+        public static float Get(float min, float max)
+        {
+            return (float)(random.NextDouble() * (max - min) + min);
         }
     }
 }

@@ -13,7 +13,7 @@ namespace States
     public class ShopBrowseState : MonoBehaviour
     {
         private ShopModel shopModel;
-        private ShopController shopController;
+        private InventoryController inventoryController;
 
         private ShopView shopView;
         private ShopMessageView shopMessageView;
@@ -26,9 +26,13 @@ namespace States
 
         public void Initialize()
         {
-            // Set up the model and controller
+            // Set up the Models
             shopModel = new ShopModel();
-            shopController = new ShopController(shopModel);
+            CustomerModel customer = new CustomerModel("Leonard", 500);
+
+            // Set up Controllers
+
+            inventoryController = new InventoryController(shopModel, customer);
 
             // Get view from children
             shopView = GetComponentInChildren<ShopView>();
@@ -38,13 +42,9 @@ namespace States
             shopMessageView = GetComponentInChildren<ShopMessageView>();
             Debug.Assert(shopMessageView != null);
 
-            // Setup model and controller
-            Customer customer = new Customer("Leonard");
-            shopModel.SetCustomer(customer);
-
             // Link them
-            shopView.Initialize(shopModel, shopController);
-            shopMessageView.Initialize(shopModel);
+            shopView.Initialize(shopModel, inventoryController);
+            shopMessageView.Initialize(shopModel, customer);
         }
 
     }

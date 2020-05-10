@@ -1,54 +1,30 @@
 ﻿namespace Model
 {
-    using System;
-    using System.Collections.Generic;
-    using Utility;
-
-    public class Customer
+    public class CustomerModel : TraderModel
     {
-        private Inventory inventory;
-        public Inventory Inventory => inventory;
+        private const int INVENTORY_CAPACITY = 24;
 
-        public string Name { get; private set; }
-        public int Gold { get; private set; }
+        public CustomerModel(string name, int startingGold) : base()
+        {
+            Initialize(name, startingGold, INVENTORY_CAPACITY);
+        }
 
-        public Customer(string name)
+        protected override void Initialize(string name, int startingGold, int inventoryCapacity)
         {
             Name = name;
-            Initialize();
+            Gold = startingGold;
+            Inventory = new Inventory(inventoryCapacity);
         }
 
-        public void Initialize()
+        public override void Restock()
         {
-            inventory = new Inventory(24);
-            Gold = 500;
-
-            ShopModel.OnBuyEvent += OnBuyItem;
-            ShopModel.OnSellEvent += OnSellItem;
+            AddGold(GetGoldFromAdventure());
         }
 
-        ~Customer()
+        // Simulate adventuring functionality
+        private int GetGoldFromAdventure()
         {
-            ShopModel.OnBuyEvent -= OnBuyItem;
-            ShopModel.OnSellEvent -= OnSellItem;
-        }
-
-        public void OnBuyItem(Item item, Customer customer)
-        {
-            AddGold(-item.Cost);
-            inventory.Add(item);
-        }
-
-        public void OnSellItem(Item item, Customer customer)
-        {
-            AddGold(item.Cost);
-            inventory.Remove(item);
-        }
-
-        private void AddGold(int value)
-        {
-            Gold += value;
-            Gold.Clamp(0, 99999);
+            return Utility.Random.Get(200, 350);
         }
     }
 }

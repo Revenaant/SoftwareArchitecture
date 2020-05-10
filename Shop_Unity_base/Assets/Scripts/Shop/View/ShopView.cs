@@ -7,8 +7,10 @@
 
     using Model;
     using Controller;
+    using Model.Items;
+    using System;
 
-    public class ShopView : MonoBehaviour
+    public class ShopView : MonoBehaviour, IObserver<TradeNotification>
     {
         [SerializeField]
         private LayoutGroup itemLayoutGroup;
@@ -23,30 +25,27 @@
         private Button sellButton;
 
         private ShopModel shopModel;
-        private ShopController shopController;
+        private InventoryController inventoryController;
+        private IDisposable unsubscriber;
 
         // This method is used to initialize the view, as we can't use a constructor (monobehaviour)
-        public void Initialize(ShopModel shopModel, ShopController shopController)
+        public void Initialize(ShopModel shopModel, InventoryController shopController)
         {
             this.shopModel = shopModel;
-            this.shopController = new ShopController(shopModel);
-
-            ShopModel.OnBuyEvent += OnShopUpdated;
-            ShopModel.OnSellEvent += OnShopUpdated;
+            this.inventoryController = shopController;
 
             PopulateItemIconView();
             InitializeButtons();
         }
 
-        private void OnShopUpdated(Item item, Customer customer)
+        public void SubscribeToObservable(IObservable<TradeNotification> observable)
         {
-            RepopulateItemIconView();
+            unsubscriber = observable?.Subscribe(this);
         }
 
-        private void OnDestroy()
+        private void OnShopUpdated()
         {
-            ShopModel.OnBuyEvent -= OnShopUpdated;
-            ShopModel.OnSellEvent -= OnShopUpdated;
+            RepopulateItemIconView();
         }
 
         // Clears the icon gridview and repopulates it with new icons (updates the visible icons)
@@ -93,7 +92,7 @@
             itemButton.onClick.AddListener(
                 delegate
                 {
-                    shopController.SelectItem(item);
+                    inventoryController.SelectItem(item);
 
                     // TODO We need an Event system instead of this
                     RepopulateItemIconView();
@@ -107,21 +106,27 @@
             buyButton.onClick.AddListener(
                 delegate
                 {
-                    shopController.Buy();
+                    inventoryController.Sell();
 
                     // TODO We need an Event system instead of this
                     RepopulateItemIconView();
                 }
             );
-            sellButton.onClick.AddListener(
-                delegate
-                {
-                    shopController.Sell();
+        }
 
-                    // TODO We need an Event system instead of this
-                    RepopulateItemIconView();
-                }
-            );
+        void IObserver<TradeNotification>.OnNext(TradeNotification value)
+        {
+            OnShopUpdated();
+        }
+
+        void IObserver<TradeNotification>.OnCompleted()
+        {
+            unsubscriber.Dispose();
+        }
+
+        void IObserver<TradeNotification>.OnError(Exception error)
+        {
+            throw new NotSupportedException("There was an error sending data, this method should never be called");
         }
     }
 }
