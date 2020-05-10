@@ -1,4 +1,4 @@
-﻿namespace Model.Items
+﻿namespace Model
 {
     public interface IClonable
     {
