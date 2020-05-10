@@ -93,10 +93,7 @@ namespace View
                 // Check vertical boundaries
                 int newItemIndex = GetIndexFromGridPosition(requestedSelectionX, requestedSelectionY);
                 if (newItemIndex >= 0 && newItemIndex <= inventoryController.GetItemCount())
-                {
-                    Item item = inventoryController.GetItemByIndex(newItemIndex);
-                    inventoryController.SelectItem(item);
-                }
+                    inventoryController.SelectItemByIndex(newItemIndex);
             }
         }
 
@@ -123,33 +120,48 @@ namespace View
 
         private void DrawItems()
         {
-            List<Item> items = inventoryController.Trader.Inventory.GetItems();
-            for (int index = 0; index < items.Count; index++)
+            for (int i = 0; i < inventoryController.Trader.Inventory.ItemCount; i++)
             {
-                Item item = items[index];
-                int iconX = GetColumnByIndex(index) * SPACING + MARGIN;
-                int iconY = GetRowByIndex(index) * SPACING + MARGIN;
+                DrawableComponent drawable = inventoryController.Trader.Inventory.GetItemByIndex(i).GetComponent<DrawableComponent>();
+                if (drawable == null)
+                    continue;
 
-                if (item == inventoryController.Trader.Inventory.GetSelectedItem())
-                    DrawSelectedItem(item, iconX, iconY);
+                int iconX = GetColumnByIndex(i) * SPACING + MARGIN;
+                int iconY = GetRowByIndex(i) * SPACING + MARGIN;
+
+                if (drawable == inventoryController.Trader.Inventory.GetSelectedItem().GetComponent<DrawableComponent>())
+                    DrawSelectedElement(drawable, iconX, iconY);
                 else
-                    DrawItem(item, iconX, iconY);
+                    DrawElement(drawable, iconX, iconY);
             }
+
+            //List<DrawableComponent> items = inventoryController.Trader.Inventory.GetItems();
+            //for (int index = 0; index < items.Count; index++)
+            //{
+            //    Item item = items[index];
+            //    int iconX = GetColumnByIndex(index) * SPACING + MARGIN;
+            //    int iconY = GetRowByIndex(index) * SPACING + MARGIN;
+
+            //    if (item == inventoryController.Trader.Inventory.GetSelectedItem())
+            //        DrawSelectedElement(item, iconX, iconY);
+            //    else
+            //        DrawElement(item, iconX, iconY);
+            //}
         }
 
-        private void DrawItem(ITradeable item, int iconX, int iconY)
-        {
-            Texture2D iconTexture = GetCachedTexture(item.IconName);
-            graphics.DrawImage(iconTexture.bitmap, iconX, iconY);
-            graphics.DrawString(item.Name, SystemFonts.CaptionFont, Brushes.Black, iconX + 8, iconY + 8);
-            graphics.DrawString($"Buy: {item.Cost.ToString()}", SystemFonts.CaptionFont, Brushes.Black, iconX + 8, iconY + 24);
-            graphics.DrawString($"Sell: {item.Cost.ToString()}", SystemFonts.CaptionFont, Brushes.White, iconX + 8, iconY + 40);
-        }
-
-        private void DrawSelectedItem(Item item, int iconX, int iconY)
+        private void DrawSelectedElement(DrawableComponent drawable, int iconX, int iconY)
         {
             if (Utils.Random(0, 2) == 0)
-                DrawItem(item, iconX, iconY);
+                DrawElement(drawable, iconX, iconY);
+        }
+
+        private void DrawElement(DrawableComponent drawable, int iconX, int iconY)
+        {
+            Texture2D iconTexture = GetCachedTexture(drawable.IconName);
+            graphics.DrawImage(iconTexture.bitmap, iconX, iconY);
+            graphics.DrawString(drawable.DisplayName, SystemFonts.CaptionFont, Brushes.Black, iconX + 8, iconY + 8);
+            graphics.DrawString($"Buy: {drawable.DisplayCost.ToString()}", SystemFonts.CaptionFont, Brushes.Black, iconX + 8, iconY + 24);
+            graphics.DrawString($"Sell: {drawable.DisplayCost.ToString()}", SystemFonts.CaptionFont, Brushes.White, iconX + 8, iconY + 40);
         }
 
         private Texture2D GetCachedTexture(string filename)

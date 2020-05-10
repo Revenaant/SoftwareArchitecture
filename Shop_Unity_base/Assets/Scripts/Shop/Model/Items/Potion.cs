@@ -1,27 +1,15 @@
 ﻿namespace Model.Items
 {
-    public class Potion : Item, IClonable
+    public class Potion : Item
     {
-        private int useAmount;
-        public int UseAmount => useAmount;
-
-        public Potion(string name, int cost, int useAmount) : base(name, cost)
+        public Potion(string name, int cost) : base(name, cost)
         {
-            this.useAmount = useAmount;
-            iconName = "itemPotion";
+            AddComponent(new DrawableComponent(name, cost, iconName: "itemPotion"));
         }
 
-        public Potion(Potion potion)
+        private Potion(Potion potion)
         {
-            CloneFields(potion);
-        }
-
-        protected override void CloneFields(Item item)
-        {
-            base.CloneFields(item);
-
-            Potion referencePotion = (Potion)item;
-            useAmount = referencePotion.useAmount;
+            CloneMembers(potion);
         }
 
         public override IClonable Clone()
