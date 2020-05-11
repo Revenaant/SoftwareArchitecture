@@ -67,12 +67,12 @@ namespace Model
             return TypeToComponent;
         }
 
-        protected virtual void CloneMembers(Item item)
+        protected virtual void CloneMembers(Item original)
         {
-            name = item.name;
-            cost = item.cost;
+            name = original.name;
+            cost = original.cost;
 
-            foreach (Component<Item> component in item.TypeToComponent.Values)
+            foreach (Component<Item> component in original.TypeToComponent.Values)
                 AddComponent((Component<Item>)component.Clone());
         }
 

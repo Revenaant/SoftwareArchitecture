@@ -23,17 +23,17 @@ namespace Model
             this.strength = strength;
         }
 
-        private RPGStatsComponent(RPGStatsComponent statsComponent)
+        private RPGStatsComponent(RPGStatsComponent original)
         {
-            CloneMembers(statsComponent);
+            CloneMembers(original);
         }
 
-        private void CloneMembers(RPGStatsComponent statsComponent)
+        private void CloneMembers(RPGStatsComponent original)
         {
-            health = statsComponent.health;
-            mana = statsComponent.mana;
-            nourishment = statsComponent.nourishment;
-            strength = statsComponent.strength;
+            health = original.health;
+            mana = original.mana;
+            nourishment = original.nourishment;
+            strength = original.strength;
         }
 
         public override IClonable Clone()

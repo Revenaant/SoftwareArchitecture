@@ -7,9 +7,9 @@
             AddComponent(new DrawableComponent(name, cost, iconName: "itemPotion"));
         }
 
-        private Potion(Potion potion)
+        private Potion(Potion original)
         {
-            CloneMembers(potion);
+            CloneMembers(original);
         }
 
         public override IClonable Clone()

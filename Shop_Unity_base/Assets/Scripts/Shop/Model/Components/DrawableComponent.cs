@@ -18,16 +18,16 @@
             return new DrawableComponent(this);
         }
 
-        private DrawableComponent(DrawableComponent drawableComponent)
+        private DrawableComponent(DrawableComponent original)
         {
-            CloneMembers(drawableComponent);
+            CloneMembers(original);
         }
 
-        private void CloneMembers(DrawableComponent drawableComponent)
+        private void CloneMembers(DrawableComponent original)
         {
-            DisplayName = drawableComponent.DisplayName;
-            DisplayCost = drawableComponent.DisplayCost;
-            IconName = drawableComponent.IconName;
+            DisplayName = original.DisplayName;
+            DisplayCost = original.DisplayCost;
+            IconName = original.IconName;
         }
     }
 }

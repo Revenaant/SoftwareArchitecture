@@ -11,14 +11,14 @@
             Range = range;
         }
 
-        public ThrowableComponent(ThrowableComponent throwableComponent)
+        public ThrowableComponent(ThrowableComponent original)
         {
-            CloneMembers(throwableComponent);
+            CloneMembers(original);
         }
 
-        public void CloneMembers(ThrowableComponent throwableComponent)
+        public void CloneMembers(ThrowableComponent original)
         {
-            Range = throwableComponent.Range;
+            Range = original.Range;
         }
 
         public void Throw()

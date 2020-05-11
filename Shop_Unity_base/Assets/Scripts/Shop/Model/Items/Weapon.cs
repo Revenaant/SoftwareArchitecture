@@ -10,9 +10,9 @@ namespace Model.Items
                 AddComponent(new DrawableComponent(name, cost, iconName: "itemWeapon"));
         }
 
-        private Weapon(Weapon weapon)
+        private Weapon(Weapon original)
         {
-            CloneMembers(weapon);
+            CloneMembers(original);
         }
 
         public override IClonable Clone()

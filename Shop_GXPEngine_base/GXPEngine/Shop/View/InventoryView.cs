@@ -97,11 +97,6 @@ namespace View
             }
         }
 
-        private int GetIndexFromGridPosition(int column, int row)
-        {
-            return row * COLUMNS + column;
-        }
-
         private int GetColumnByIndex(int index)
         {
             return index % COLUMNS;
@@ -111,6 +106,11 @@ namespace View
         {
             // Rounds down
             return index / COLUMNS;
+        }
+
+        private int GetIndexFromGridPosition(int column, int row)
+        {
+            return row * COLUMNS + column;
         }
 
         private void DrawBackground()

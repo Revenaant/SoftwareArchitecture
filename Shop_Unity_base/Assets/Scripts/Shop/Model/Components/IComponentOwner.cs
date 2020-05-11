@@ -4,7 +4,7 @@ namespace Model
     using System;
     using System.Collections.Generic;
 
-    public interface IComponentOwner<U>
+    public interface IComponentOwner<U> where U : IComponentOwner<U>
     {
         Dictionary<Type, Component<U>> GetComponents();
 

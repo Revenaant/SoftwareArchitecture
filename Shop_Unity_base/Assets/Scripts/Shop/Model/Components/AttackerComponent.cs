@@ -60,16 +60,16 @@
             criticalChance.Clamp(0.0f, 1.0f);
         }
 
-        public AttackerComponent(AttackerComponent attackerComponent)
+        public AttackerComponent(AttackerComponent original)
         {
-            CloneMembers(attackerComponent);
+            CloneMembers(original);
         }
 
-        private void CloneMembers(AttackerComponent attackerComponent)
+        private void CloneMembers(AttackerComponent original)
         {
-            accuracy = attackerComponent.accuracy;
-            criticalChance = attackerComponent.criticalChance;
-            damage = attackerComponent.damage;
+            accuracy = original.accuracy;
+            criticalChance = original.criticalChance;
+            damage = original.damage;
         }
 
         public override IClonable Clone()

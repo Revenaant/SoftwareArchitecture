@@ -23,25 +23,27 @@
             this.useCount = useCount;
         }
 
-        private ConsumableComponent(ConsumableComponent consumableComponent)
+        private ConsumableComponent(ConsumableComponent original)
         {
-            CloneMembers(consumableComponent);
+            CloneMembers(original);
         }
 
-        private void CloneMembers(ConsumableComponent consumable)
+        private void CloneMembers(ConsumableComponent original)
         {
-            Effect = consumable.Effect;
-            Potency = consumable.Potency;
-            Duration = consumable.Duration;
-            useCount = consumable.useCount;
+            Effect = original.Effect;
+            Potency = original.Potency;
+            Duration = original.Duration;
+            useCount = original.useCount;
         }
 
         public void Consume(RPGStatsComponent stats)
         {
             useCount--;
-            SetEnabled(useCount > 0);
 
-            if (useCount <= 0)
+            bool isAboveZero = (useCount > 0);
+            SetEnabled(isAboveZero);
+
+            if (!isAboveZero)
                 return;
 
             stats.Consume(this);
