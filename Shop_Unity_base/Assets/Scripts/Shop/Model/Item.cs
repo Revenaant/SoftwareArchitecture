@@ -4,6 +4,7 @@ namespace Model
     using System;
     using Model.Items;
     using System.Collections.Generic;
+    using Utility;
 
     public abstract class Item : IClonable, ITradeable, IComponentOwner<Item>
     {
@@ -12,19 +13,27 @@ namespace Model
         protected Dictionary<Type, Component<Item>> TypeToComponent = new Dictionary<Type, Component<Item>>();
 
         protected string name;
-        protected int cost;
-
         public string Name => name;
+
+        protected int cost;
         public int Cost => cost;
+
+        private int quantity;
+        public int Quantity
+        {
+            get => quantity;
+            set => quantity = value;
+        }
 
         protected Item()
         {
         }
 
-        protected Item(string name, int cost)
+        protected Item(string name, int cost, int quantity = 1)
         {
             this.name = name;
             this.cost = cost;
+            this.quantity = quantity;
         }
 
         public void AddComponent(Component<Item> component)

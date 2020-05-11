@@ -4,5 +4,6 @@
     {
         string Name { get; }
         int Cost { get; }
+        int Quantity { get; set; }
     }
 }

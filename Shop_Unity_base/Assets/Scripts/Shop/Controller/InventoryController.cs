@@ -38,6 +38,11 @@
             return trader.Inventory.GetItemByIndex(index);
         }
 
+        public Item GetSelectedItem()
+        {
+            return trader.Inventory.GetSelectedItem();
+        }
+
         public int GetSelectedItemIndex()
         {
             return trader.Inventory.GetSelectedItemIndex();

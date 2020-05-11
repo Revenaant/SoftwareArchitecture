@@ -6,26 +6,23 @@ using UnityEngine;
 // until the application closes.
 public static class SpriteCache
 {
-    static private Dictionary<string, Sprite> cache = new Dictionary<string, Sprite>();
+    static private Dictionary<string, Sprite> filenameToSprite = new Dictionary<string, Sprite>();
 
     /// <summary>
-    /// Get a sprite, specified by identifier
+    /// Get a sprite, specified by the name of the file 
     /// </summary>
-    public static Sprite Get(string identifier)
+    public static Sprite Get(string filename)
     {
-        if (!cache.ContainsKey(identifier))
+        if (!filenameToSprite.ContainsKey(filename))
         {
-            Texture2D texture = Resources.Load<Texture2D>("icons/" + identifier);
-            if (texture != null)
-            {
-                Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0f, 0f));
-                cache[identifier] = sprite;
-            }
-            else
-            {
+            Texture2D texture = Resources.Load<Texture2D>("icons/" + filename);
+            if (texture == null)
                 return null;
-            }
+
+            Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0f, 0f));
+            filenameToSprite.Add(filename, sprite);
         }
-        return cache[identifier];
+
+        return filenameToSprite[filename];
     }
 }

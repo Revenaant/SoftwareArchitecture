@@ -40,8 +40,10 @@ namespace Model
                 return;
             }
 
+            if (--tradeable.Quantity <= 0)
+                Inventory.Remove((Item)tradeable);
+
             AddGold(tradeable.Cost);
-            Inventory.Remove((Item)tradeable);
             NotifyObservers(new TradeNotification(this, buyer, tradeable, isSuccessful: true));
         }
 

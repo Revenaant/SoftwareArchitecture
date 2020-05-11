@@ -10,11 +10,8 @@ using Model;
 // and it enables or disables the checkbox to indicate if the Item is selected.
 public class ItemContainer : MonoBehaviour
 {
-    // Link to the checkmark image (set in prefab)
     [SerializeField]
     private GameObject checkMark;
-
-    // Link to the original item (set in Initialize)
     private Item item;
 
     public Item GetItem()
@@ -28,12 +25,11 @@ public class ItemContainer : MonoBehaviour
         this.item = item;
 
         // Set checkmark visibility
-        if (isSelected)
-            checkMark.SetActive(true);
+        checkMark.SetActive(isSelected);
 
         // Set button image
         Image image = GetComponentInChildren<Image>();
-        Sprite sprite = SpriteCache.Get(item.IconName);
+        Sprite sprite = SpriteCache.Get(item.GetComponent<DrawableComponent>().IconName);
 
         if (sprite != null)
             image.sprite = sprite;

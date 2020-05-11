@@ -57,8 +57,6 @@ namespace View
             DrawBackground();
             DrawItems();
             HandleNavigation();
-
-            inputManager.Update(inventoryController);
         }
 
         private void OnShopUpdated()
@@ -122,14 +120,14 @@ namespace View
         {
             for (int i = 0; i < inventoryController.Trader.Inventory.ItemCount; i++)
             {
-                DrawableComponent drawable = inventoryController.Trader.Inventory.GetItemByIndex(i).GetComponent<DrawableComponent>();
+                DrawableComponent drawable = inventoryController.GetItemByIndex(i).GetComponent<DrawableComponent>();
                 if (drawable == null)
                     continue;
 
                 int iconX = GetColumnByIndex(i) * SPACING + MARGIN;
                 int iconY = GetRowByIndex(i) * SPACING + MARGIN;
 
-                if (drawable == inventoryController.Trader.Inventory.GetSelectedItem().GetComponent<DrawableComponent>())
+                if (drawable == inventoryController.GetSelectedItem().GetComponent<DrawableComponent>())
                     DrawSelectedElement(drawable, iconX, iconY);
                 else
                     DrawElement(drawable, iconX, iconY);

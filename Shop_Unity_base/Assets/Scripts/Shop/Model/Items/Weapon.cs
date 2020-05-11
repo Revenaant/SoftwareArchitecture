@@ -4,7 +4,7 @@ namespace Model.Items
 {
     public class Weapon : Item, IClonable
     {
-        public Weapon(string name, int cost) : base(name, cost)
+        public Weapon(string name, int cost, int quantity = 1) : base(name, cost, quantity)
         {
             if (!TypeToComponent.ContainsKey(typeof(DrawableComponent)))
                 AddComponent(new DrawableComponent(name, cost, iconName: "itemWeapon"));

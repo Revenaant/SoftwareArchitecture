@@ -1,11 +1,11 @@
-﻿using System;
-using System.Drawing;
-using GXPEngine;
-using Model;
-using Model.Items;
-
-namespace View
+﻿namespace View
 {
+    using System;
+    using System.Drawing;
+    using GXPEngine;
+    using Model;
+    using Model.Items;
+
     // This class will draw a messagebox containing messages from the Shop that is observed.
     public class ShopMessageView : Canvas, IObserver<TradeNotification>
     {

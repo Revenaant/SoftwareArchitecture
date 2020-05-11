@@ -18,6 +18,9 @@ namespace States
         private InventoryView customerInventoryView;
         private ShopMessageView shopMessageView;
 
+        private TraderModel shopModel;
+        private TraderModel customerModel;
+
         private bool buying = true;
         private InventoryController currentController
         {
@@ -46,15 +49,27 @@ namespace States
 
         private void Initialize()
         {
-            // Create models
-            TraderModel shopModel = new ShopModel();
-            TraderModel customer = new CustomerModel("Leonard", 300);
+            CreateModels();
+            CreateControllers();
+            CreateViews();
+            RegisterObservers();
+        }
 
-            // Create controller
-            shopController = new InventoryController(shopModel, customer);
-            customerController = new InventoryController(customer, shopModel);
+        private void CreateModels()
+        {
+            shopModel = new ShopModel();
+            customerModel = new CustomerModel("Leonard", 300);
+        }
+
+        private void CreateControllers()
+        {
+            shopController = new InventoryController(shopModel, customerModel);
+            customerController = new InventoryController(customerModel, shopModel);
             inputManager = new GXPInputManager();
+        }
 
+        private void CreateViews()
+        {
             // Create shop view
             shopInventoryView = new InventoryView(shopController, inputManager, System.Drawing.Color.LightGoldenrodYellow);
             shopInventoryView.SetViewScreenPosition(0.5f, 0.25f);
@@ -71,12 +86,21 @@ namespace States
             shopMessageView = new ShopMessageView();
             AddChild(shopMessageView);
             Helper.AlignToCenter(shopMessageView, true, false);
+        }
 
-            // Register observers
-            shopModel.SubscribeToObservable(customer);
-            customer.SubscribeToObservable(shopModel);
-            RegisterViewsToTradeObservables(customer);
+        private void RegisterObservers()
+        {
+            shopModel.SubscribeToObservable(customerModel);
+            customerModel.SubscribeToObservable(shopModel);
+            RegisterViewsToTradeObservables(customerModel);
             RegisterViewsToTradeObservables(shopModel);
+        }
+
+        private void RegisterViewsToTradeObservables(IObservable<TradeNotification> observable)
+        {
+            shopInventoryView.SubscribeToObservable(observable);
+            customerInventoryView.SubscribeToObservable(observable);
+            shopMessageView.SubscribeToObservable(observable);
         }
 
         public void Step()
@@ -85,20 +109,13 @@ namespace States
             if (Input.GetKeyDown(Key.TAB))
                 ToggleInventories();
 
-            // currentController.Step()
             currentView.Step();
+            inputManager.Update(currentController);
         }
 
         private void ToggleInventories()
         {
             buying = !buying;
-        }
-
-        private void RegisterViewsToTradeObservables(IObservable<TradeNotification> observable)
-        {
-            shopInventoryView.SubscribeToObservable(observable);
-            customerInventoryView.SubscribeToObservable(observable);
-            shopMessageView.SubscribeToObservable(observable);
         }
     }
 }

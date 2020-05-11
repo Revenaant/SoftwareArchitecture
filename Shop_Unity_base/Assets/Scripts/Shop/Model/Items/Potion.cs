@@ -2,7 +2,7 @@
 {
     public class Potion : Item
     {
-        public Potion(string name, int cost) : base(name, cost)
+        public Potion(string name, int cost, int quantity = 1) : base(name, cost, quantity)
         {
             AddComponent(new DrawableComponent(name, cost, iconName: "itemPotion"));
         }
