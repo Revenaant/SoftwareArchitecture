@@ -3,53 +3,95 @@ using System.Collections.Generic;
 
 namespace Model
 {
-    public class Customer
+    public class CustomerModel : TraderModel, IComponentOwner<CustomerModel>, IConsumer
     {
-        private Inventory inventory;
-        public int Gold { get; private set; }
+        private const int INVENTORY_CAPACITY = 24;
 
-        public Customer()
+        private Dictionary<Type, CustomComponent<CustomerModel>> TypeToComponent = new Dictionary<Type, CustomComponent<CustomerModel>>();
+
+        public CustomerModel(string name, int startingGold) : base()
         {
-            Initialize();
+            Initialize(name, startingGold, INVENTORY_CAPACITY);
         }
 
-        public void Initialize()
+        protected override void Initialize(string name, int startingGold, int inventoryCapacity)
         {
-            inventory = new Inventory(16);
-            Gold = 500;
+            Name = name;
+            Gold = startingGold;
+            Inventory = new Inventory(inventoryCapacity);
         }
 
-        public void Purchase(Item item)
+        public override void Restock()
         {
-            Gold = Math.Max(Gold - item.Cost, 0);
-            inventory.AddItem(item);
+            int goldGained = GetGoldFromAdventure();
+            AddGold(goldGained);
+            NotifyRedrawObservers(new RedrawNotification($"{Name} returned from Adventure, obtaining {goldGained} gold"));
         }
 
-        public void Sell(Item item)
+        // Simulate adventuring functionality
+        private int GetGoldFromAdventure()
         {
-            Gold += item.Cost;
-            inventory.RemoveItem(item);
-        }
-    }
-
-    public class Inventory
-    {
-        public readonly List<Item> items;
-
-        public Inventory(int size)
-        {
-            items = new List<Item>(size);
+            return Utility.Random.Get(200, 350);
         }
 
-        public void AddItem(Item item)
+        void IConsumer.Consume(Item item)
         {
-            items.Add(item);
+            if (item == null)
+                return;
+
+            ConsumableComponent consumable = item.GetComponent<ConsumableComponent>();
+            RPGStatsComponent stats = GetComponent<RPGStatsComponent>();
+
+            if (consumable == null || stats == null)
+                return;
+
+            stats.Consume(consumable);
+
+            if (consumable.IsSpent)
+                Inventory.Remove(item);
+
+            NotifyRedrawObservers(new RedrawNotification($"{Name} consumed {item.Name}, " +
+                $"receiving effect: [{consumable.Effect.ToString()}] for {consumable.Potency} points"));
         }
 
-        public void RemoveItem(Item item)
+        public void AddComponent(CustomComponent<CustomerModel> component)
         {
-            if (items.Contains(item))
-                items.Remove(item);
+            if (TypeToComponent.ContainsKey(component.GetType()))
+                return;
+
+            Type type = component.GetType();
+            TypeToComponent.Add(type, component);
+            component.SetOwner(this);
+        }
+
+        public void AddComponents(params CustomComponent<CustomerModel>[] components)
+        {
+            for (int i = 0; i < components.Length; i++)
+                AddComponent(components[i]);
+        }
+
+        public T GetComponent<T>() where T : CustomComponent<CustomerModel>
+        {
+            if (!TypeToComponent.ContainsKey(typeof(T)))
+                return null;
+
+            return (T)TypeToComponent[typeof(T)];
+        }
+
+        public void RemoveComponent<T>() where T : CustomComponent<CustomerModel>
+        {
+            Type type = typeof(T);
+
+            if (TypeToComponent.ContainsKey(type))
+            {
+                TypeToComponent[type].SetOwner(null);
+                TypeToComponent.Remove(type);
+            }
+        }
+
+        Dictionary<Type, CustomComponent<CustomerModel>> IComponentOwner<CustomerModel>.GetComponents()
+        {
+            return TypeToComponent;
         }
     }
 }

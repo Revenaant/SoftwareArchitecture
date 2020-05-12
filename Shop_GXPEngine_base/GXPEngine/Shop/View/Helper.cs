@@ -2,12 +2,9 @@
 {
     using GXPEngine;
 
-    //This contains useful functions for doing things
+    // This contains useful functions
     public static class Helper
     {
-        //------------------------------------------------------------------------------------------------------------------------
-        //                                                  AlignToCenter()
-        //------------------------------------------------------------------------------------------------------------------------
         /// <summary>
         /// Aligns a Sprite (and thus Canvas) to the center of the screen
         /// </summary>

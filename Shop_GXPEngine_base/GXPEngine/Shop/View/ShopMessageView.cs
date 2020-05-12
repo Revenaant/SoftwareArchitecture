@@ -1,58 +1,70 @@
-﻿using System;
-using System.Drawing;
-using GXPEngine;
-using Model;
-
-namespace View
+﻿namespace View
 {
-    //This class will draw a messagebox containing messages from the Shop that is observed.
-    public class ShopMessageView : Canvas
+    using GXPEngine;
+    using Model;
+    using System;
+    using System.Drawing;
+
+    // This class will draw a messagebox containing messages from the TradeLog
+    public class ShopMessageView : Canvas, IObserver<RedrawNotification>
     {
-        const int FontHeight = 20;
+        private const int FONT_HEIGHT = 20;
+        private IDisposable unsubscriber;
 
-        private ShopModel shop;
-
-        //------------------------------------------------------------------------------------------------------------------------
-        //                                                  ShopMessageDisplay()
-        //------------------------------------------------------------------------------------------------------------------------
-        public ShopMessageView(ShopModel shop) : base(800, 100)
+        public ShopMessageView() : base(800, 100)
         {
-            this.shop = shop;
+            DrawLogElements();
         }
 
-        //------------------------------------------------------------------------------------------------------------------------
-        //                                                  Step()
-        //------------------------------------------------------------------------------------------------------------------------
-        public void Step()
+        private void OnShopUpdated()
+        {
+            DrawLogElements();
+        }
+
+        private void DrawLogElements()
         {
             DrawBackground();
             DrawMessages();
         }
 
-        //------------------------------------------------------------------------------------------------------------------------
-        //                                                  DrawBackground()
-        //------------------------------------------------------------------------------------------------------------------------
-        //Draw background color
         private void DrawBackground()
         {
             graphics.Clear(Color.White);
-            graphics.FillRectangle(Brushes.Gray, new Rectangle(0, 0, game.width, FontHeight));
+            graphics.FillRectangle(Brushes.Gray, new Rectangle(0, 0, game.width, FONT_HEIGHT));
         }
 
-        //------------------------------------------------------------------------------------------------------------------------
-        //                                                  DrawMessages()
-        //------------------------------------------------------------------------------------------------------------------------
-        //Draw messages onto this messagebox
+        // Draw messages onto this messagebox
         private void DrawMessages()
         {
-            graphics.DrawString("Use ARROWKEYS to navigate. Press SPACE to buy, BKSPACE to sell.", SystemFonts.CaptionFont, Brushes.White, 0, 0);
+            graphics.DrawString("Use ARROWKEYS : Navigate, SPACE : Buy, TAB : Switch inventory, C : Clear, R : Restock, E : Consume", SystemFonts.CaptionFont, Brushes.White, 0, 0);
 
-            string[] messages = shop.GetMessages();
-            for (int index = 0; index < messages.Length; index++) {
+            string[] messages = TradeLog.GetMessages();
+            for (int index = 0; index < messages.Length; index++)
+            {
                 String message = messages[index];
-                graphics.DrawString(message, SystemFonts.CaptionFont, Brushes.Black, 0, FontHeight + index * FontHeight);
+                graphics.DrawString(message, SystemFonts.CaptionFont, Brushes.Black, 0, FONT_HEIGHT + index * FONT_HEIGHT);
             }
         }
 
+        public void SubscribeToObservable(IObservable<RedrawNotification> observable)
+        {
+            unsubscriber = observable?.Subscribe(this);
+        }
+
+        void IObserver<RedrawNotification>.OnNext(RedrawNotification notification)
+        {
+            TradeLog.AddMessage(notification.message);
+            OnShopUpdated();
+        }
+
+        void IObserver<RedrawNotification>.OnCompleted()
+        {
+            unsubscriber.Dispose();
+        }
+
+        void IObserver<RedrawNotification>.OnError(Exception error)
+        {
+            throw new NotSupportedException("There was an error sending data, this method should never be called");
+        }
     }
 }
