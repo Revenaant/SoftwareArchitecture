@@ -11,10 +11,10 @@ namespace View
     using System;
 
     // This Class draws the icons for the items in the store
-    public class InventoryView : Canvas, IObserver<TradeNotification>
+    public class InventoryView : Canvas, IObserver<RedrawNotification>
     {
         const int COLUMNS = 6;
-        const int SPACING = 80;
+        const int SPACING = 100;
         const int MARGIN = 18;
 
         private IDisposable unsubscriber;
@@ -23,25 +23,25 @@ namespace View
         private GXPInputManager inputManager;
         private Color InventoryColor;
 
-        // TODO The icon cache is built in here, that violates the S.R. principle.
-        private Dictionary<string, Texture2D> iconCache;
+        private TextureCache TextureCache;
 
-        public InventoryView(InventoryController inventoryController, GXPInputManager inputManager, Color color) : base(498, 340)
+        public InventoryView(InventoryController inventoryController, GXPInputManager inputManager, Color color) : base(640, 340)
         {
             this.inventoryController = inventoryController;
             this.inputManager = inputManager;
             this.InventoryColor = color;
 
-            iconCache = new Dictionary<string, Texture2D>();
+            TextureCache = new TextureCache();
 
             x = (game.width - width) / 2;
             y = (game.height - height) / 4;
 
             DrawBackground();
             DrawItems();
+            DrawInfo();
         }
 
-        public void SubscribeToObservable(IObservable<TradeNotification> observable)
+        public void SubscribeToObservable(IObservable<RedrawNotification> observable)
         {
             unsubscriber = observable?.Subscribe(this);
         }
@@ -54,15 +54,20 @@ namespace View
 
         public void Step()
         {
+            HandleNavigation();
+
+            // Left here to keep the blinking item functionality
             DrawBackground();
             DrawItems();
-            HandleNavigation();
+            DrawInfo();
         }
 
         private void OnShopUpdated()
         {
+            Console.WriteLine("YIP");
             DrawBackground();
             DrawItems();
+            DrawInfo();
         }
 
         private void HandleNavigation()
@@ -132,19 +137,6 @@ namespace View
                 else
                     DrawElement(drawable, iconX, iconY);
             }
-
-            //List<DrawableComponent> items = inventoryController.Trader.Inventory.GetItems();
-            //for (int index = 0; index < items.Count; index++)
-            //{
-            //    Item item = items[index];
-            //    int iconX = GetColumnByIndex(index) * SPACING + MARGIN;
-            //    int iconY = GetRowByIndex(index) * SPACING + MARGIN;
-
-            //    if (item == inventoryController.Trader.Inventory.GetSelectedItem())
-            //        DrawSelectedElement(item, iconX, iconY);
-            //    else
-            //        DrawElement(item, iconX, iconY);
-            //}
         }
 
         private void DrawSelectedElement(DrawableComponent drawable, int iconX, int iconY)
@@ -155,32 +147,30 @@ namespace View
 
         private void DrawElement(DrawableComponent drawable, int iconX, int iconY)
         {
-            Texture2D iconTexture = GetCachedTexture(drawable.IconName);
+            Texture2D iconTexture = TextureCache.GetCachedTexture(drawable.IconName);
             graphics.DrawImage(iconTexture.bitmap, iconX, iconY);
             graphics.DrawString(drawable.DisplayName, SystemFonts.CaptionFont, Brushes.Black, iconX + 8, iconY + 8);
             graphics.DrawString($"Buy: {drawable.DisplayCost.ToString()}", SystemFonts.CaptionFont, Brushes.Black, iconX + 8, iconY + 24);
-            graphics.DrawString($"Sell: {drawable.DisplayCost.ToString()}", SystemFonts.CaptionFont, Brushes.White, iconX + 8, iconY + 40);
+            graphics.DrawString($"{drawable.DisplayQuantity.ToString()}x", SystemFonts.CaptionFont, Brushes.SlateGray, iconX + 8, iconY + 64);
         }
 
-        private Texture2D GetCachedTexture(string filename)
+        private void DrawInfo()
         {
-            if (!iconCache.ContainsKey(filename))
-                iconCache.Add(filename, new Texture2D("media/" + filename + ".png"));
-
-            return iconCache[filename];
+            graphics.DrawString($"{inventoryController.Trader.Name}'s Inventory", SystemFonts.CaptionFont, Brushes.Black, 20, height - 20);
+            graphics.DrawString($"Gold: {inventoryController.Trader.Gold}", SystemFonts.CaptionFont, Brushes.Black, width * 0.8f, height - 20);
         }
 
-        void IObserver<TradeNotification>.OnNext(TradeNotification value)
+        void IObserver<RedrawNotification>.OnNext(RedrawNotification value)
         {
             OnShopUpdated();
         }
 
-        void IObserver<TradeNotification>.OnCompleted()
+        void IObserver<RedrawNotification>.OnCompleted()
         {
             unsubscriber.Dispose();
         }
 
-        void IObserver<TradeNotification>.OnError(Exception error)
+        void IObserver<RedrawNotification>.OnError(Exception error)
         {
             throw new NotSupportedException("There was an error sending data, this method should never be called");
         }

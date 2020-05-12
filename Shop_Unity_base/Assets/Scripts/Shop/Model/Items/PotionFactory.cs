@@ -11,11 +11,11 @@
 
         public PotionFactory()
         {
-            string namePrefix = "P";
-            AddOrUpdatePrototype(PotionType.HealtSmall, new Potion(name: $"{namePrefix}-sHP", cost: 10),
+            string namePrefix = "Pot";
+            AddOrUpdatePrototype(PotionType.HealtSmall, new Potion(name: $"{namePrefix}-small HP", cost: 10),
                 new ConsumableComponent(RPGStatsComponent.StatsEffect.HealthModifier, potency: 10));
 
-            AddOrUpdatePrototype(PotionType.HealthGrand, new Potion(name: $"{namePrefix}-gHP", cost: 20),
+            AddOrUpdatePrototype(PotionType.HealthGrand, new Potion(name: $"{namePrefix}-great HP", cost: 20),
                 new ConsumableComponent(RPGStatsComponent.StatsEffect.HealthModifier, potency: 10, useCount: 2));
 
             AddOrUpdatePrototype(PotionType.Mana, new Potion(name: $"{namePrefix}-Mana", cost: 12),

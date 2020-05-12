@@ -13,6 +13,7 @@
         private void BindCommands()
         {
             SetKeyCodeToCommand(Key.SPACE, new SellCommand());
+            SetKeyCodeToCommand(Key.E, new ConsumeCommand());
             SetKeyCodeToCommand(Key.C, new ClearCommand());
             SetKeyCodeToCommand(Key.F, new SortCommand());
             SetKeyCodeToCommand(Key.R, new RestockCommand());

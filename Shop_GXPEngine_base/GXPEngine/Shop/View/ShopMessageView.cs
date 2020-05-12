@@ -7,7 +7,7 @@
     using Model.Items;
 
     // This class will draw a messagebox containing messages from the Shop that is observed.
-    public class ShopMessageView : Canvas, IObserver<TradeNotification>
+    public class ShopMessageView : Canvas, IObserver<RedrawNotification>
     {
         private const int FONT_HEIGHT = 20;
         private IDisposable unsubscriber;
@@ -17,7 +17,7 @@
             DrawLogElements();
         }
 
-        public void SubscribeToObservable(IObservable<TradeNotification> observable)
+        public void SubscribeToObservable(IObservable<RedrawNotification> observable)
         {
             unsubscriber = observable?.Subscribe(this);
         }
@@ -36,15 +36,14 @@
 
         private void DrawBackground()
         {
-            // Draw background color
             graphics.Clear(Color.White);
             graphics.FillRectangle(Brushes.Gray, new Rectangle(0, 0, game.width, FONT_HEIGHT));
         }
 
-        //Draw messages onto this messagebox
+        // Draw messages onto this messagebox
         private void DrawMessages()
         {
-            graphics.DrawString("Use ARROWKEYS to navigate. Press SPACE to buy, BKSPACE to sell.", SystemFonts.CaptionFont, Brushes.White, 0, 0);
+            graphics.DrawString("Use ARROWKEYS : Navigate, SPACE : Buy, TAB : Switch inventory, C : Clear, R : Restock, S : Sort, E : Consume", SystemFonts.CaptionFont, Brushes.White, 0, 0);
 
             string[] messages = TradeLog.GetMessages();
             for (int index = 0; index < messages.Length; index++)
@@ -54,17 +53,18 @@
             }
         }
 
-        void IObserver<TradeNotification>.OnNext(TradeNotification value)
+        void IObserver<RedrawNotification>.OnNext(RedrawNotification notification)
         {
+            TradeLog.AddMessage(notification.message);
             OnShopUpdated();
         }
 
-        void IObserver<TradeNotification>.OnCompleted()
+        void IObserver<RedrawNotification>.OnCompleted()
         {
             unsubscriber.Dispose();
         }
 
-        void IObserver<TradeNotification>.OnError(Exception error)
+        void IObserver<RedrawNotification>.OnError(Exception error)
         {
             throw new NotSupportedException("There was an error sending data, this method should never be called");
         }

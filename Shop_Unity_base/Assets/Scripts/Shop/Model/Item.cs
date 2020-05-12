@@ -22,7 +22,14 @@ namespace Model
         public int Quantity
         {
             get => quantity;
-            set => quantity = value;
+            set
+            {
+                quantity = value;
+
+                DrawableComponent drawable = GetComponent<DrawableComponent>();
+                if (drawable != null)
+                    drawable.SetQuantity(quantity);
+            }
         }
 
         protected Item()

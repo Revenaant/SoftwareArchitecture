@@ -2,15 +2,24 @@
 {
     public class DrawableComponent : Component<Item>
     {
+        public string IconName { get; private set; }
         public string DisplayName { get; private set; }
         public int DisplayCost { get; private set; }
-        public string IconName { get; private set; }
 
-        public DrawableComponent(string displayName, int displayCost, string iconName)
+        public int displayQuantity;
+        public int DisplayQuantity => displayQuantity;
+
+        public DrawableComponent(string iconName, string displayName, int displayCost, int displayQuantity)
         {
+            IconName = iconName;
             DisplayName = displayName;
             DisplayCost = displayCost;
-            IconName = iconName;
+            this.displayQuantity = displayQuantity;
+        }
+
+        public void SetQuantity(int value)
+        {
+            displayQuantity = value;
         }
 
         public override IClonable Clone()
@@ -25,9 +34,10 @@
 
         private void CloneMembers(DrawableComponent original)
         {
+            IconName = original.IconName;
             DisplayName = original.DisplayName;
             DisplayCost = original.DisplayCost;
-            IconName = original.IconName;
+            displayQuantity = original.DisplayQuantity;
         }
     }
 }

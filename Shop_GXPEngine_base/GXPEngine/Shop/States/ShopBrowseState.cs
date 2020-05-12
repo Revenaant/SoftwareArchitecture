@@ -10,6 +10,8 @@ namespace States
 
     public class ShopBrowseState : GameObject
     {
+        private const int BASE_STATS_VALUE = 100;
+
         private GXPInputManager inputManager;
 
         private InventoryController shopController;
@@ -58,7 +60,12 @@ namespace States
         private void CreateModels()
         {
             shopModel = new ShopModel();
-            customerModel = new CustomerModel("Leonard", 300);
+
+            CustomerModel newCustomer = new CustomerModel("Leonard", 300);
+            newCustomer.AddComponent(new RPGStatsComponent(health: BASE_STATS_VALUE,
+                mana: BASE_STATS_VALUE, nourishment: BASE_STATS_VALUE, strength: BASE_STATS_VALUE));
+
+            customerModel = newCustomer;
         }
 
         private void CreateControllers()
@@ -92,11 +99,14 @@ namespace States
         {
             shopModel.SubscribeToObservable(customerModel);
             customerModel.SubscribeToObservable(shopModel);
-            RegisterViewsToTradeObservables(customerModel);
-            RegisterViewsToTradeObservables(shopModel);
+
+            RegisterViewsToRedrawObservables(customerModel);
+            RegisterViewsToRedrawObservables(shopModel);
+            RegisterViewsToRedrawObservables(customerController);
+            RegisterViewsToRedrawObservables(shopController);
         }
 
-        private void RegisterViewsToTradeObservables(IObservable<TradeNotification> observable)
+        private void RegisterViewsToRedrawObservables(IObservable<RedrawNotification> observable)
         {
             shopInventoryView.SubscribeToObservable(observable);
             customerInventoryView.SubscribeToObservable(observable);

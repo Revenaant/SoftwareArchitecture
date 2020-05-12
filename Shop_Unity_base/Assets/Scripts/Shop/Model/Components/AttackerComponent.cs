@@ -50,10 +50,6 @@
             accuracy.Clamp(0.0f, 1.0f);
         }
 
-        /// <summary>
-        /// Sets criticalChance to the given value, clamped between 0-1f
-        /// </summary>
-        /// <param name="value"></param>
         public void SetCriticalChance(float value)
         {
             criticalChance = value;

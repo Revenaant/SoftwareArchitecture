@@ -7,7 +7,7 @@ namespace Model.Items
         public Weapon(string name, int cost, int quantity = 1) : base(name, cost, quantity)
         {
             if (!TypeToComponent.ContainsKey(typeof(DrawableComponent)))
-                AddComponent(new DrawableComponent(name, cost, iconName: "itemWeapon"));
+                AddComponent(new DrawableComponent(iconName: "itemWeapon", name, cost, quantity));
         }
 
         private Weapon(Weapon original)

@@ -4,7 +4,7 @@
     {
         public Potion(string name, int cost, int quantity = 1) : base(name, cost, quantity)
         {
-            AddComponent(new DrawableComponent(name, cost, iconName: "itemPotion"));
+            AddComponent(new DrawableComponent(iconName: "itemPotion", name, cost, quantity));
         }
 
         private Potion(Potion original)

@@ -4,7 +4,7 @@
     {
         public MiscItem(string name, int cost, int quantity = 1) : base(name, cost, quantity)
         {
-            AddComponent(new DrawableComponent(name, cost, iconName: "item"));
+            AddComponent(new DrawableComponent(iconName: "item", name, cost, quantity));
         }
 
         private MiscItem(MiscItem original)

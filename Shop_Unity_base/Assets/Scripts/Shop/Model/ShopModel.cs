@@ -8,8 +8,8 @@
     {
         private const int INVENTORY_CAPACITY = 25;
         private const int STARTING_GOLD = 1000;
-        private const int MIN_ITEMS = 16;
-        private const int MAX_ITEMS = 20;
+        private const int MIN_ITEMS = 10;
+        private const int MAX_ITEMS = 18;
         private const int MAX_QUANTITY = 5;
 
         private List<IItemFactory> itemFactories = new List<IItemFactory>();

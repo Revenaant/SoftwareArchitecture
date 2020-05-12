@@ -42,7 +42,7 @@ public class ItemContainer : MonoBehaviour
         Sprite sprite = SpriteCache.Get(item.GetComponent<DrawableComponent>().IconName);
 
         nameText.text = item.Name;
-        costText.text = item.Cost.ToString();
+        costText.text = '$' + item.Cost.ToString();
         quantityText.text = item.Quantity.ToString() + 'x';
 
         if (sprite != null)
