@@ -1,32 +1,76 @@
 ﻿namespace View
 {
-    using UnityEngine;
     using Model;
+    using System;
+    using UnityEngine;
+    using UnityEngine.UI;
 
-    public class ShopMessageView : MonoBehaviour
+    public class ShopMessageView : MonoBehaviour, IObserver<RedrawNotification>
     {
-        private ShopModel shopModel;
+        private const int MAX_MESSAGES = 10;
 
-        //------------------------------------------------------------------------------------------------------------------------
-        //                                                  Initialize()
-        //------------------------------------------------------------------------------------------------------------------------
-        //This method is used to initialize values, because we can't use a constructor.
-        public void Initialize(ShopModel shopModel)
+        [SerializeField]
+        private Transform messagePanelTransform = null;
+
+        [SerializeField]
+        private GameObject textPrefab = null;
+
+        private IDisposable unsubscriber;
+
+        public void SubscribeToObservable(IObservable<RedrawNotification> observable)
         {
-            this.shopModel = shopModel;
+            unsubscriber = observable?.Subscribe(this);
         }
 
-        //------------------------------------------------------------------------------------------------------------------------
-        //                                                  Update()
-        //------------------------------------------------------------------------------------------------------------------------        
-        //this method polls the shop for messages and prints them. Since the shop caches the messages, it prints the same
-        //message each frame. An event system would work better.
-        protected void Update() {
-            string[] messages = shopModel.GetMessages();
-            if (messages.Length > 0) {
-                string message = messages[messages.Length - 1];
-                Debug.Log(message);
+        private void OnShopUpdated()
+        {
+            string[] messages = TradeLog.GetMessages();
+
+            for (int i = 0; i < messages.Length; i++)
+            {
+                AddMessageToPanel(messages[i]);
+                Debug.Log(messages[i]);
             }
+        }
+
+        private void AddMessageToPanel(string message)
+        {
+            if (messagePanelTransform.childCount > MAX_MESSAGES)
+                Destroy(messagePanelTransform.GetChild(0).gameObject);
+
+            GameObject newText = Instantiate(textPrefab, messagePanelTransform);
+            Message newMessage = new Message(message, newText.GetComponent<Text>()); //TODO wtf was I doing
+        }
+
+        void IObserver<RedrawNotification>.OnNext(RedrawNotification notification)
+        {
+            OnShopUpdated();
+            AddMessageToPanel(notification.message);
+            Debug.Log(notification.message);
+        }
+
+        void IObserver<RedrawNotification>.OnCompleted()
+        {
+            unsubscriber.Dispose();
+        }
+
+        void IObserver<RedrawNotification>.OnError(Exception error)
+        {
+            throw new NotSupportedException("There was an error sending data, this method should never be called");
+        }
+    }
+
+    public struct Message
+    {
+        public string message;
+        public Text textObject;
+
+        public Message(string message, Text textObject)
+        {
+            this.message = message;
+            this.textObject = textObject;
+
+            textObject.text = message;
         }
     }
 }

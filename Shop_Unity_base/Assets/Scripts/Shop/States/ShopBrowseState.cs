@@ -3,53 +3,111 @@ using UnityEngine;
 
 namespace States
 {
+    using Controller;
     using Model;
     using View;
-    using Controller;
 
-    //This state takes the model that is contained in the ModelContainer object, and allow us to browse it using
-    //a controller and two views. Both views are on the same child. On renders the shop as icons, the other renders it
-    //as text (messages). There is no event system, so the text is printed every frame.
     public class ShopBrowseState : MonoBehaviour
     {
-        private ShopModel shopModel;
+        private const int BASE_STATS_VALUE = 100;
 
-        private ShopController shopController;
-        private ShopView shopView;
-        private ShopMessageView shopMessageView;
+        [Header("Views")]
 
-        //------------------------------------------------------------------------------------------------------------------------
-        //                                                  Start()
-        //------------------------------------------------------------------------------------------------------------------------
-        //This method gets the whole setup going
+        [SerializeField]
+        private InventoryView shopInventoryView = null;
+
+        [SerializeField]
+        private InventoryView customerInventoryView = null;
+
+        [SerializeField]
+        private ShopMessageView shopMessageView = null;
+
+        private InventoryController shopController;
+        private InventoryController customerController;
+        private UnityInputManager inputManager;
+        private TraderModel shopModel;
+        private TraderModel customerModel;
+
+        private bool buying = true;
+
+        private InventoryController currentController
+        {
+            get
+            {
+                return buying
+                  ? shopController
+                  : customerController;
+            }
+        }
+
+        private InventoryView currentView
+        {
+            get
+            {
+                return buying
+                  ? shopInventoryView
+                  : customerInventoryView;
+            }
+        }
+
         protected void Start()
         {
-            Initialize();  
+            Initialize();
         }
 
-        //------------------------------------------------------------------------------------------------------------------------
-        //                                                  Initialize()
-        //------------------------------------------------------------------------------------------------------------------------
         public void Initialize()
         {
-            //Set up the model and controller
-            shopModel = new ShopModel();
-            shopController = new ShopController(shopModel);
-
-            //get view from children
-            shopView = GetComponentInChildren<ShopView>();
-            Debug.Assert(shopView != null);
-
-            //get mesageview from children
-            shopMessageView = GetComponentInChildren<ShopMessageView>();
-            Debug.Assert(shopMessageView != null);
-
-            //setup model and controller
-
-            //link them
-            shopView.Initialize(shopModel, shopController);//view1
-            shopMessageView.Initialize(shopModel);//view2
+            CreateModels();
+            CreateControllers();
+            SetupViews();
+            RegisterObservers();
         }
 
+        private void CreateModels()
+        {
+            shopModel = new ShopModel();
+
+            CustomerModel newCustomer = new CustomerModel("Leonard", 300);
+            newCustomer.AddComponent(new RPGStatsComponent(health: BASE_STATS_VALUE,
+                mana: BASE_STATS_VALUE, nourishment: BASE_STATS_VALUE, strength: BASE_STATS_VALUE));
+
+            customerModel = newCustomer;
+        }
+
+        private void CreateControllers()
+        {
+            shopController = new InventoryController(shopModel, customerModel);
+            customerController = new InventoryController(customerModel, shopModel);
+            inputManager = new UnityInputManager();
+        }
+
+        private void SetupViews()
+        {
+            shopInventoryView.Initialize(shopController, inputManager);
+            customerInventoryView.Initialize(customerController, inputManager);
+        }
+
+        private void RegisterObservers()
+        {
+            shopModel.SubscribeToObservable(customerModel);
+            customerModel.SubscribeToObservable(shopModel);
+
+            RegisterViewsToRedrawObservables(customerModel);
+            RegisterViewsToRedrawObservables(shopModel);
+            RegisterViewsToRedrawObservables(customerController);
+            RegisterViewsToRedrawObservables(shopController);
+        }
+
+        private void RegisterViewsToRedrawObservables(IObservable<RedrawNotification> observable)
+        {
+            shopInventoryView.SubscribeToObservable(observable);
+            customerInventoryView.SubscribeToObservable(observable);
+            shopMessageView.SubscribeToObservable(observable);
+        }
+
+        private void Update()
+        {
+            inputManager.Update(currentController);
+        }
     }
 }
