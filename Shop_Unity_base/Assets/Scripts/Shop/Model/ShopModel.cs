@@ -6,10 +6,10 @@
 
     public class ShopModel : TraderModel
     {
-        private const int INVENTORY_CAPACITY = 24;
+        private const int INVENTORY_CAPACITY = 25;
         private const int STARTING_GOLD = 1000;
         private const int MIN_ITEMS = 16;
-        private const int MAX_ITEMS = 25;
+        private const int MAX_ITEMS = 20;
         private const int MAX_QUANTITY = 5;
 
         private List<IItemFactory> itemFactories = new List<IItemFactory>();
@@ -52,6 +52,7 @@
         {
             Inventory.ClearInventory();
             PopulateInventory(Random.Get(MIN_ITEMS, MAX_ITEMS));
+            NotifyRedrawObservers(new RedrawNotification($"{Name} restocked, new items are available"));
         }
     }
 }

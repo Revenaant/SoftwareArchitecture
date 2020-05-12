@@ -44,4 +44,12 @@
             controller.Sell();
         }
     }
+
+    public class ConsumeCommand : ICommand
+    {
+        void ICommand.Execute(InventoryController controller)
+        {
+            controller.Consume();
+        }
+    }
 }

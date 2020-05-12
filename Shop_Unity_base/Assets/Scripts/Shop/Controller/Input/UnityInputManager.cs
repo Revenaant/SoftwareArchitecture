@@ -1,10 +1,15 @@
 ﻿namespace Controller
 {
     using UnityEngine;
+    using UnityEngine.UI;
+
     using Model;
+    using System.Collections.Generic;
 
     public class UnityInputManager : InputManager<KeyCode>
     {
+        private Dictionary<Button, ICommand> buttonToCommand = new Dictionary<Button, ICommand>();
+
         public UnityInputManager()
         {
             BindCommands();
@@ -18,13 +23,23 @@
             SetKeyCodeToCommand(KeyCode.R, new RestockCommand());
         }
 
+        public void BindCommandToButton(Button button, ICommand command, InventoryController inventoryController)
+        {
+            buttonToCommand.Add(button, command);
+            button.onClick.AddListener(() => buttonToCommand[button]?.Execute(inventoryController));
+        }
+
         public override ICommand HandleInput()
         {
             ICommand frameInput = null;
 
             // This implementation has an order priority to the Input pressed in the same frame
             foreach (KeyCode key in keyCodeToCommand.Keys)
+            {
                 frameInput = GetCommandDown(key);
+                if (frameInput != null)
+                    return frameInput;
+            }
 
             return frameInput;
         }

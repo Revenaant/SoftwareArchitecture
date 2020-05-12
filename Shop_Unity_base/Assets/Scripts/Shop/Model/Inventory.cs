@@ -32,6 +32,11 @@
                 items.Remove(item);
         }
 
+        public bool Contains(Item item)
+        {
+            return items.Contains(item);
+        }
+
         public void ClearInventory()
         {
             items.Clear();
@@ -57,6 +62,17 @@
 
             // Enforce valid indexes
             return items[index.Clamp(0, ItemCount - 1)];
+        }
+
+        public Item GetItemByName(string name)
+        {
+            for (int i = 0; i < ItemCount; i++)
+            {
+                if (items[i].Name.Equals(name))
+                    return items[i];
+            }
+
+            return null;
         }
 
         public int IndexOfItem(Item item)

@@ -14,7 +14,9 @@
         private const int MAX_POTENCY = 50;
         private const float CHANCE_OF_CONSUMABLE = 0.8f;
 
-        private string[] adjectives = { "Hot", "Cold", "Large", "Small", "Long", "Rancid", "Sparkly", "Dumb", "Sad", "Sweet" };
+        private string[] adjectives = { "Hot", "Cold", "Large", "Small", "Long", "Rancid", "Sparkly", "Dumb", "Sad", "Sweet", "Bad",
+                                        "Sick", "Stone", "Woolen", "Sturdy", "Dull", "Rich", "Silly", "Super", "Evil", "Lucky", "Fancy"};
+
         private string[] nouns = { "Squash", "Cream", "Bucket", "Door", "Pants", "Box", "Sock", "Squid", "Plank", "Hand", "Glass",
                                     "Oil", "Fire", "Water", "Moon", "Cracker", "Key", "Eye", "Soap", "Cat", "Seed", "Fur", "Liquid" };
 

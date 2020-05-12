@@ -6,57 +6,66 @@
     using Controller;
     using UnityEngine.UI;
 
-    public class InventoryView : MonoBehaviour, IObserver<TradeNotification>
+    public class InventoryView : MonoBehaviour, IObserver<RedrawNotification>
     {
-        [SerializeField]
-        private LayoutGroup itemLayoutGroup;
+        [Header("Items")]
 
         [SerializeField]
-        private GameObject itemPrefab;
+        private LayoutGroup itemLayoutGroup = null;
 
         [SerializeField]
-        private Text inventoryName;
+        private GameObject itemPrefab = null;
+
+        [Header("Text")]
+
+        [SerializeField]
+        private Text inventoryNameText = null;
+
+        [SerializeField]
+        private Text goldText = null;
 
         [Header("Buttons")]
 
         [SerializeField]
-        private Button buyButton;
+        private Button buyButton = null;
 
         [SerializeField]
-        private Button consumeButton;
+        private Button consumeButton = null;
 
         [SerializeField]
-        private Button SortButton;
+        private Button sortButton = null;
 
         [SerializeField]
-        private Button RestockButton;
+        private Button restockButton = null;
 
         [SerializeField]
-        private Button ClearButton;
+        private Button clearButton = null;
 
         private InventoryController inventoryController;
         private UnityInputManager inputManager;
-        private IDisposable unsubscriber;
+        private IDisposable RedrawUnsubscriber;
 
         public void Initialize(InventoryController inventoryController, UnityInputManager inputManager)
         {
             this.inventoryController = inventoryController;
             this.inputManager = inputManager;
 
+            inventoryNameText.text = $"{inventoryController.Trader.Name}'s Inventory";
+            goldText.text = $"Gold: {inventoryController.Trader.Gold}";
 
-            inventoryName.text = $"{inventoryController.Trader.Name}'s Inventory";
             PopulateItemIconView();
             InitializeButtons();
         }
 
-        public void SubscribeToObservable(IObservable<TradeNotification> observable)
+        public void SubscribeToObservable(IObservable<RedrawNotification> observable)
         {
-            unsubscriber = observable?.Subscribe(this);
+            RedrawUnsubscriber = observable?.Subscribe(this);
         }
 
         private void OnShopUpdated()
         {
             RepopulateItemIconView();
+            goldText.text = $"Gold: {inventoryController.Trader.Gold}";
         }
 
         // Clears the icon gridview and repopulates it with new icons (updates the visible icons)
@@ -114,28 +123,24 @@
         // This method adds a listener to the 'Buy' and 'Sell' button. They are forwarded to the controller to the shop.
         private void InitializeButtons()
         {
-            buyButton.onClick.AddListener(
-                delegate
-                {
-                    inventoryController.Sell();
-
-                    // TODO We need an Event system instead of this
-                    RepopulateItemIconView();
-                }
-            );
+            inputManager.BindCommandToButton(buyButton, new SellCommand(), inventoryController);
+            inputManager.BindCommandToButton(consumeButton, new ConsumeCommand(), inventoryController);
+            inputManager.BindCommandToButton(restockButton, new RestockCommand(), inventoryController);
+            inputManager.BindCommandToButton(sortButton, new SortCommand(), inventoryController);
+            inputManager.BindCommandToButton(clearButton, new ClearCommand(), inventoryController);
         }
 
-        void IObserver<TradeNotification>.OnNext(TradeNotification value)
+        void IObserver<RedrawNotification>.OnNext(RedrawNotification value)
         {
             OnShopUpdated();
         }
 
-        void IObserver<TradeNotification>.OnCompleted()
+        void IObserver<RedrawNotification>.OnCompleted()
         {
-            unsubscriber.Dispose();
+            RedrawUnsubscriber.Dispose();
         }
 
-        void IObserver<TradeNotification>.OnError(Exception error)
+        void IObserver<RedrawNotification>.OnError(Exception error)
         {
             throw new NotSupportedException("There was an error sending data, this method should never be called");
         }

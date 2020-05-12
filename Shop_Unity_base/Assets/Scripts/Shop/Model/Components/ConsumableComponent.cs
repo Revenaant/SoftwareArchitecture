@@ -36,7 +36,7 @@
             useCount = original.useCount;
         }
 
-        public void Consume(RPGStatsComponent stats)
+        public void OnConsumed(RPGStatsComponent stats)
         {
             useCount--;
 
@@ -45,8 +45,6 @@
 
             if (!isAboveZero)
                 return;
-
-            stats.Consume(this);
         }
 
         public override IClonable Clone()

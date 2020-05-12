@@ -6,7 +6,7 @@ namespace Model
     using System.Collections.Generic;
     using Utility;
 
-    public abstract class Item : IClonable, ITradeable, IComponentOwner<Item>
+    public abstract class Item : IClonable, ITradeable, IComparable<Item>, IComponentOwner<Item>
     {
         public enum ItemType { Potion, Weapon }
 
@@ -80,11 +80,20 @@ namespace Model
         {
             name = original.name;
             cost = original.cost;
+            quantity = 1;
 
             foreach (Component<Item> component in original.TypeToComponent.Values)
                 AddComponent((Component<Item>)component.Clone());
         }
 
         public abstract IClonable Clone();
+
+        int IComparable<Item>.CompareTo(Item other)
+        {
+            if (other == null)
+                return 1;
+
+            return name.CompareTo(other.name);
+        }
     }
 }

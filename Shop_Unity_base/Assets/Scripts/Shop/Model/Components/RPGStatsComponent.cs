@@ -15,7 +15,7 @@ namespace Model
         public int Nourishment => nourishment;
         public int Strength => strength;
 
-        private RPGStatsComponent(int health, int mana, int nourishment, int strength)
+        public RPGStatsComponent(int health, int mana, int nourishment, int strength)
         {
             this.health = health;
             this.mana = mana;
@@ -49,6 +49,7 @@ namespace Model
 
         public void Consume(ConsumableComponent consumable)
         {
+            consumable.OnConsumed(this);
             OnEffect(consumable.Effect, consumable.Potency, consumable.Duration);
         }
 

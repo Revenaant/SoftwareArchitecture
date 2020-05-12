@@ -11,7 +11,17 @@ using Model;
 public class ItemContainer : MonoBehaviour
 {
     [SerializeField]
-    private GameObject checkMark;
+    private GameObject checkMark = null;
+
+    [SerializeField]
+    private Text nameText = null;
+
+    [SerializeField]
+    private Text costText = null;
+
+    [SerializeField]
+    private Text quantityText = null;
+
     private Item item;
 
     public Item GetItem()
@@ -30,6 +40,10 @@ public class ItemContainer : MonoBehaviour
         // Set button image
         Image image = GetComponentInChildren<Image>();
         Sprite sprite = SpriteCache.Get(item.GetComponent<DrawableComponent>().IconName);
+
+        nameText.text = item.Name;
+        costText.text = item.Cost.ToString();
+        quantityText.text = item.Quantity.ToString() + 'x';
 
         if (sprite != null)
             image.sprite = sprite;
