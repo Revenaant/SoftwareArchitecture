@@ -1,6 +1,6 @@
 ﻿namespace Model
 {
-    public class ThrowableComponent : Component<Item>
+    public class ThrowableComponent : CustomComponent<Item>
     {
         public float Range { get; private set; }
 

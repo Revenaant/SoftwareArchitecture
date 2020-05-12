@@ -1,6 +1,6 @@
 ﻿namespace Model
 {
-    public class ConsumableComponent : Component<Item>
+    public class ConsumableComponent : CustomComponent<Item>
     {
         private int useCount;
 

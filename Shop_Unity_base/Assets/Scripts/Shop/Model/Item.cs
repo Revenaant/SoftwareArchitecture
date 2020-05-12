@@ -8,7 +8,7 @@
     {
         public enum ItemType { Potion, Weapon }
 
-        protected Dictionary<Type, Component<Item>> TypeToComponent = new Dictionary<Type, Component<Item>>();
+        protected Dictionary<Type, CustomComponent<Item>> TypeToComponent = new Dictionary<Type, CustomComponent<Item>>();
 
         protected string name;
         public string Name => name;
@@ -41,7 +41,7 @@
             this.quantity = quantity;
         }
 
-        public void AddComponent(Component<Item> component)
+        public void AddComponent(CustomComponent<Item> component)
         {
             if (TypeToComponent.ContainsKey(component.GetType()))
                 return;
@@ -51,13 +51,13 @@
             component.SetOwner(this);
         }
 
-        public void AddComponents(params Component<Item>[] components)
+        public void AddComponents(params CustomComponent<Item>[] components)
         {
             for (int i = 0; i < components.Length; i++)
                 AddComponent(components[i]);
         }
 
-        public T GetComponent<T>() where T : Component<Item>
+        public T GetComponent<T>() where T : CustomComponent<Item>
         {
             if (!TypeToComponent.ContainsKey(typeof(T)))
                 return null;
@@ -65,7 +65,7 @@
             return (T)TypeToComponent[typeof(T)];
         }
 
-        public void RemoveComponent<T>() where T : Component<Item>
+        public void RemoveComponent<T>() where T : CustomComponent<Item>
         {
             Type type = typeof(T);
 
@@ -76,7 +76,7 @@
             }
         }
 
-        Dictionary<Type, Component<Item>> IComponentOwner<Item>.GetComponents()
+        Dictionary<Type, CustomComponent<Item>> IComponentOwner<Item>.GetComponents()
         {
             return TypeToComponent;
         }
@@ -88,8 +88,8 @@
             cost = original.cost;
             quantity = 1;
 
-            foreach (Component<Item> component in original.TypeToComponent.Values)
-                AddComponent((Component<Item>)component.Clone());
+            foreach (CustomComponent<Item> component in original.TypeToComponent.Values)
+                AddComponent((CustomComponent<Item>)component.Clone());
         }
 
         int IComparable<Item>.CompareTo(Item other)

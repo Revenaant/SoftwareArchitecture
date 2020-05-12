@@ -32,10 +32,10 @@
                 new ConsumableComponent(RPGStatsComponent.StatsEffect.Invisibility, potency: 1, duration: 30));
         }
 
-        public void AddOrUpdatePrototype(PotionType type, Potion potion, params Component<Item>[] components)
+        public void AddOrUpdatePrototype(PotionType type, Potion potion, params CustomComponent<Item>[] components)
         {
             potion.AddComponents(components);
-            TypeToPrototype.Add(type, potion);
+            TypeToPrototype[type] = potion;
         }
 
         Item IItemFactory.CreateRandom()

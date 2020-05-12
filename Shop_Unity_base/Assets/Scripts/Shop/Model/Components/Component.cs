@@ -1,6 +1,6 @@
 ﻿namespace Model
 {
-    public abstract class Component<T> : IClonable where T : IComponentOwner<T>
+    public abstract class CustomComponent<T> : IClonable where T : IComponentOwner<T>
     {
         private T owner;
         public T Owner => owner;

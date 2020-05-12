@@ -36,7 +36,7 @@
         // Draw messages onto this messagebox
         private void DrawMessages()
         {
-            graphics.DrawString("Use ARROWKEYS : Navigate, SPACE : Buy, TAB : Switch inventory, C : Clear, R : Restock, S : Sort, E : Consume", SystemFonts.CaptionFont, Brushes.White, 0, 0);
+            graphics.DrawString("Use ARROWKEYS : Navigate, SPACE : Buy, TAB : Switch inventory, C : Clear, R : Restock, E : Consume", SystemFonts.CaptionFont, Brushes.White, 0, 0);
 
             string[] messages = TradeLog.GetMessages();
             for (int index = 0; index < messages.Length; index++)

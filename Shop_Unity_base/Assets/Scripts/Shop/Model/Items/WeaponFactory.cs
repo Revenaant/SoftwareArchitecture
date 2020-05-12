@@ -30,7 +30,7 @@
                 new AttackerComponent(damage: 12, accuracy: 0.5f, criticalChance: 0.6f));
         }
 
-        public void AddOrUpdatePrototype(WeaponType type, Weapon weapon, params Component<Item>[] components)
+        public void AddOrUpdatePrototype(WeaponType type, Weapon weapon, params CustomComponent<Item>[] components)
         {
             weapon.AddComponents(components);
             TypeToPrototype.Add(type, weapon);

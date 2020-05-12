@@ -5,14 +5,14 @@
 
     public interface IComponentOwner<U> where U : IComponentOwner<U>
     {
-        Dictionary<Type, Component<U>> GetComponents();
+        Dictionary<Type, CustomComponent<U>> GetComponents();
 
-        void AddComponent(Component<U> component);
+        void AddComponent(CustomComponent<U> component);
 
-        void AddComponents(params Component<U>[] components);
+        void AddComponents(params CustomComponent<U>[] components);
 
-        T GetComponent<T>() where T : Component<U>;
+        T GetComponent<T>() where T : CustomComponent<U>;
 
-        void RemoveComponent<T>() where T : Component<U>;
+        void RemoveComponent<T>() where T : CustomComponent<U>;
     }
 }

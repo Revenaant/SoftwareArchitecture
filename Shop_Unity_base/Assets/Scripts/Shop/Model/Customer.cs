@@ -7,7 +7,7 @@ namespace Model
     {
         private const int INVENTORY_CAPACITY = 24;
 
-        private Dictionary<Type, Component<CustomerModel>> TypeToComponent = new Dictionary<Type, Component<CustomerModel>>();
+        private Dictionary<Type, CustomComponent<CustomerModel>> TypeToComponent = new Dictionary<Type, CustomComponent<CustomerModel>>();
 
         public CustomerModel(string name, int startingGold) : base()
         {
@@ -54,7 +54,7 @@ namespace Model
                 $"receiving effect: [{consumable.Effect.ToString()}] for {consumable.Potency} points"));
         }
 
-        public void AddComponent(Component<CustomerModel> component)
+        public void AddComponent(CustomComponent<CustomerModel> component)
         {
             if (TypeToComponent.ContainsKey(component.GetType()))
                 return;
@@ -64,13 +64,13 @@ namespace Model
             component.SetOwner(this);
         }
 
-        public void AddComponents(params Component<CustomerModel>[] components)
+        public void AddComponents(params CustomComponent<CustomerModel>[] components)
         {
             for (int i = 0; i < components.Length; i++)
                 AddComponent(components[i]);
         }
 
-        public T GetComponent<T>() where T : Component<CustomerModel>
+        public T GetComponent<T>() where T : CustomComponent<CustomerModel>
         {
             if (!TypeToComponent.ContainsKey(typeof(T)))
                 return null;
@@ -78,7 +78,7 @@ namespace Model
             return (T)TypeToComponent[typeof(T)];
         }
 
-        public void RemoveComponent<T>() where T : Component<CustomerModel>
+        public void RemoveComponent<T>() where T : CustomComponent<CustomerModel>
         {
             Type type = typeof(T);
 
@@ -89,7 +89,7 @@ namespace Model
             }
         }
 
-        Dictionary<Type, Component<CustomerModel>> IComponentOwner<CustomerModel>.GetComponents()
+        Dictionary<Type, CustomComponent<CustomerModel>> IComponentOwner<CustomerModel>.GetComponents()
         {
             return TypeToComponent;
         }

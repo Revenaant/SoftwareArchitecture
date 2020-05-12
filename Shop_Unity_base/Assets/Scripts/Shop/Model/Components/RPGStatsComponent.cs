@@ -2,7 +2,7 @@
 {
     using Utility;
 
-    public partial class RPGStatsComponent : Component<CustomerModel>, ITargetable
+    public partial class RPGStatsComponent : CustomComponent<CustomerModel>, ITargetable
     {
         private int health;
         public int Health => health;

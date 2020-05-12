@@ -2,7 +2,7 @@
 {
     using Utility;
 
-    public class AttackerComponent : Component<Item>
+    public class AttackerComponent : CustomComponent<Item>
     {
         private float accuracy;
         private float Accuracy => accuracy;

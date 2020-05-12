@@ -1,6 +1,6 @@
 ﻿namespace Model
 {
-    public class DrawableComponent : Component<Item>
+    public class DrawableComponent : CustomComponent<Item>
     {
         public string IconName { get; private set; }
         public string DisplayName { get; private set; }
