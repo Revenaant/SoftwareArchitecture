@@ -1,10 +1,10 @@
-﻿using Model.Items;
-using System;
-using System.Collections.Generic;
-using Utility;
-
-namespace Model
+﻿namespace Model
 {
+    using Model.Items;
+    using System;
+    using System.Collections.Generic;
+    using Utility;
+
     public abstract partial class TraderModel : ITrader, IObservable<RedrawNotification>, IObservable<TradeNotification>, IObserver<TradeNotification>
     {
         public Inventory Inventory { get; protected set; }

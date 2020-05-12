@@ -1,8 +1,8 @@
 ﻿namespace Model
 {
     using Model.Items;
-    using Utility;
     using System.Collections.Generic;
+    using Utility;
 
     public class ShopModel : TraderModel
     {

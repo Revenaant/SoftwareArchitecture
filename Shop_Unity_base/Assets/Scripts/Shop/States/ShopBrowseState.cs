@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace States
 {
+    using Controller;
     using Model;
     using View;
-    using Controller;
 
     public class ShopBrowseState : MonoBehaviour
     {
@@ -50,7 +50,6 @@ namespace States
             }
         }
 
-        // This method gets the whole setup going
         protected void Start()
         {
             Initialize();
@@ -105,7 +104,6 @@ namespace States
             customerInventoryView.SubscribeToObservable(observable);
             shopMessageView.SubscribeToObservable(observable);
         }
-
 
         private void Update()
         {

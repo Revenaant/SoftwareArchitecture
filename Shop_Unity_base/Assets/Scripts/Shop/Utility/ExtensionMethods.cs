@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Utility
+﻿namespace Utility
 {
+    using System;
+
     public static class ExtensionMethods
     {
         public static T Clamp<T>(this T value, T min, T max) where T : IComparable<T>

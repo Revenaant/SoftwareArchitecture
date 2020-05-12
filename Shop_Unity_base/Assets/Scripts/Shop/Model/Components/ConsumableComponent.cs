@@ -23,19 +23,6 @@
             this.useCount = useCount;
         }
 
-        private ConsumableComponent(ConsumableComponent original)
-        {
-            CloneMembers(original);
-        }
-
-        private void CloneMembers(ConsumableComponent original)
-        {
-            Effect = original.Effect;
-            Potency = original.Potency;
-            Duration = original.Duration;
-            useCount = original.useCount;
-        }
-
         public void OnConsumed(RPGStatsComponent stats)
         {
             useCount--;
@@ -50,6 +37,19 @@
         public override IClonable Clone()
         {
             return new ConsumableComponent(this);
+        }
+
+        private ConsumableComponent(ConsumableComponent original)
+        {
+            CloneMembers(original);
+        }
+
+        private void CloneMembers(ConsumableComponent original)
+        {
+            Effect = original.Effect;
+            Potency = original.Potency;
+            Duration = original.Duration;
+            useCount = original.useCount;
         }
     }
 }

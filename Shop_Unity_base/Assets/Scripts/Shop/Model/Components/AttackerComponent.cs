@@ -5,7 +5,10 @@
     public class AttackerComponent : Component<Item>
     {
         private float accuracy;
+        private float Accuracy => accuracy;
+
         private float criticalChance;
+        private float CriticalChance => criticalChance;
 
         private int damage;
         public int Damage => damage;
@@ -56,6 +59,11 @@
             criticalChance.Clamp(0.0f, 1.0f);
         }
 
+        public override IClonable Clone()
+        {
+            return new AttackerComponent(this);
+        }
+
         public AttackerComponent(AttackerComponent original)
         {
             CloneMembers(original);
@@ -66,11 +74,6 @@
             accuracy = original.accuracy;
             criticalChance = original.criticalChance;
             damage = original.damage;
-        }
-
-        public override IClonable Clone()
-        {
-            return new AttackerComponent(this);
         }
     }
 }

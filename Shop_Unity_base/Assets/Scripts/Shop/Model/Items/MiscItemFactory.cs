@@ -22,7 +22,6 @@
 
         public MiscItemFactory()
         {
-
         }
 
         Item IItemFactory.CreateRandom()

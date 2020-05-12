@@ -1,9 +1,9 @@
 ﻿namespace View
 {
-    using UnityEngine;
-    using System;
-    using Model;
     using Controller;
+    using Model;
+    using System;
+    using UnityEngine;
     using UnityEngine.UI;
 
     public class InventoryView : MonoBehaviour, IObserver<RedrawNotification>
@@ -57,9 +57,13 @@
             InitializeButtons();
         }
 
-        public void SubscribeToObservable(IObservable<RedrawNotification> observable)
+        private void InitializeButtons()
         {
-            RedrawUnsubscriber = observable?.Subscribe(this);
+            inputManager.BindCommandToButton(buyButton, new SellCommand(), inventoryController);
+            inputManager.BindCommandToButton(consumeButton, new ConsumeCommand(), inventoryController);
+            inputManager.BindCommandToButton(restockButton, new RestockCommand(), inventoryController);
+            inputManager.BindCommandToButton(sortButton, new SortCommand(), inventoryController);
+            inputManager.BindCommandToButton(clearButton, new ClearCommand(), inventoryController);
         }
 
         private void OnShopUpdated()
@@ -113,21 +117,14 @@
                 delegate
                 {
                     inventoryController.SelectItem(item);
-
-                    // TODO We need an Event system instead of this
                     RepopulateItemIconView();
                 }
             );
         }
 
-        // This method adds a listener to the 'Buy' and 'Sell' button. They are forwarded to the controller to the shop.
-        private void InitializeButtons()
+        public void SubscribeToObservable(IObservable<RedrawNotification> observable)
         {
-            inputManager.BindCommandToButton(buyButton, new SellCommand(), inventoryController);
-            inputManager.BindCommandToButton(consumeButton, new ConsumeCommand(), inventoryController);
-            inputManager.BindCommandToButton(restockButton, new RestockCommand(), inventoryController);
-            inputManager.BindCommandToButton(sortButton, new SortCommand(), inventoryController);
-            inputManager.BindCommandToButton(clearButton, new ClearCommand(), inventoryController);
+            RedrawUnsubscriber = observable?.Subscribe(this);
         }
 
         void IObserver<RedrawNotification>.OnNext(RedrawNotification value)

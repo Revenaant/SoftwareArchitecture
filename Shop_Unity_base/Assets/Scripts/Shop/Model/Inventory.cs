@@ -3,7 +3,6 @@
     using System.Collections.Generic;
     using Utility;
 
-    // TODO Generics
     public class Inventory
     {
         private int selectedItemIndex = 0;
@@ -85,20 +84,16 @@
             return index;
         }
 
-        // TODO should these methods go in a separate "controller" type class?
-        // Returns the selected item
         public Item GetSelectedItem()
         {
             return GetItemByIndex(selectedItemIndex);
         }
 
-        // Returns the index of the current selected item
         public int GetSelectedItemIndex()
         {
             return selectedItemIndex;
         }
 
-        // Attempts to select the given item, fails silently
         public void SelectItem(Item item)
         {
             if (item != null)
@@ -109,23 +104,15 @@
             }
         }
 
-        // Attempts to select the item, specified by 'index', fails silently
         public void SelectItemByIndex(int index)
         {
             if (index >= 0 && index < ItemCount)
                 selectedItemIndex = index;
         }
 
-
-        /// <summary>
-        /// Returns a shallow copy of the list with all current items in the shop.
-        /// </summary>
         public List<Item> GetItems()
         {
-            return new List<Item>(Items); // TODO, this returns a copy of the list, so the original is kept intact, 
-                                          // however this is shallow copy of the original list, so changes in 
-                                          // the original list will likely influence the copy, apply 
-                                          // creational patterns like prototype to fix this. 
+            return new List<Item>(Items);
         }
     }
 }

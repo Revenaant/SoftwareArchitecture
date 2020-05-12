@@ -1,10 +1,8 @@
 ﻿namespace Controller
 {
+    using System.Collections.Generic;
     using UnityEngine;
     using UnityEngine.UI;
-
-    using Model;
-    using System.Collections.Generic;
 
     public class UnityInputManager : InputManager<KeyCode>
     {

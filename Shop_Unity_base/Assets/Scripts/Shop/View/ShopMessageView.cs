@@ -1,10 +1,9 @@
 ﻿namespace View
 {
+    using Model;
     using System;
     using UnityEngine;
     using UnityEngine.UI;
-    using Model;
-    using Model.Items;
 
     public class ShopMessageView : MonoBehaviour, IObserver<RedrawNotification>
     {

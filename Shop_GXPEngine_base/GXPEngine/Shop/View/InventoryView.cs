@@ -1,14 +1,11 @@
 namespace View
 {
-    using System.Collections.Generic;
-    using System.Drawing;
+    using Controller;
     using GXPEngine;
     using GXPEngine.Core;
-
     using Model;
-    using Controller;
-    using Model.Items;
     using System;
+    using System.Drawing;
 
     // This Class draws the icons for the items in the store
     public class InventoryView : Canvas, IObserver<RedrawNotification>
@@ -21,9 +18,8 @@ namespace View
 
         private InventoryController inventoryController;
         private GXPInputManager inputManager;
-        private Color InventoryColor;
-
         private TextureCache TextureCache;
+        private Color InventoryColor;
 
         public InventoryView(InventoryController inventoryController, GXPInputManager inputManager, Color color) : base(640, 340)
         {
@@ -39,11 +35,6 @@ namespace View
             DrawBackground();
             DrawItems();
             DrawInfo();
-        }
-
-        public void SubscribeToObservable(IObservable<RedrawNotification> observable)
-        {
-            unsubscriber = observable?.Subscribe(this);
         }
 
         public void SetViewScreenPosition(float xPercentage, float yPercentage)
@@ -64,7 +55,6 @@ namespace View
 
         private void OnShopUpdated()
         {
-            Console.WriteLine("YIP");
             DrawBackground();
             DrawItems();
             DrawInfo();
@@ -158,6 +148,11 @@ namespace View
         {
             graphics.DrawString($"{inventoryController.Trader.Name}'s Inventory", SystemFonts.CaptionFont, Brushes.Black, 20, height - 20);
             graphics.DrawString($"Gold: {inventoryController.Trader.Gold}", SystemFonts.CaptionFont, Brushes.Black, width * 0.8f, height - 20);
+        }
+
+        public void SubscribeToObservable(IObservable<RedrawNotification> observable)
+        {
+            unsubscriber = observable?.Subscribe(this);
         }
 
         void IObserver<RedrawNotification>.OnNext(RedrawNotification value)

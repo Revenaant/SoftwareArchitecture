@@ -1,12 +1,11 @@
 ﻿namespace View
 {
-    using System;
-    using System.Drawing;
     using GXPEngine;
     using Model;
-    using Model.Items;
+    using System;
+    using System.Drawing;
 
-    // This class will draw a messagebox containing messages from the Shop that is observed.
+    // This class will draw a messagebox containing messages from the TradeLog
     public class ShopMessageView : Canvas, IObserver<RedrawNotification>
     {
         private const int FONT_HEIGHT = 20;
@@ -17,12 +16,6 @@
             DrawLogElements();
         }
 
-        public void SubscribeToObservable(IObservable<RedrawNotification> observable)
-        {
-            unsubscriber = observable?.Subscribe(this);
-        }
-
-        // TODO make this function an Interface for all Views
         private void OnShopUpdated()
         {
             DrawLogElements();
@@ -51,6 +44,11 @@
                 String message = messages[index];
                 graphics.DrawString(message, SystemFonts.CaptionFont, Brushes.Black, 0, FONT_HEIGHT + index * FONT_HEIGHT);
             }
+        }
+
+        public void SubscribeToObservable(IObservable<RedrawNotification> observable)
+        {
+            unsubscriber = observable?.Subscribe(this);
         }
 
         void IObserver<RedrawNotification>.OnNext(RedrawNotification notification)

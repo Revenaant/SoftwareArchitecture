@@ -1,10 +1,8 @@
-﻿
-namespace Model
+﻿namespace Model
 {
-    using System;
     using Model.Items;
+    using System;
     using System.Collections.Generic;
-    using Utility;
 
     public abstract class Item : IClonable, ITradeable, IComparable<Item>, IComponentOwner<Item>
     {
@@ -82,6 +80,7 @@ namespace Model
         {
             return TypeToComponent;
         }
+        public abstract IClonable Clone();
 
         protected virtual void CloneMembers(Item original)
         {
@@ -92,8 +91,6 @@ namespace Model
             foreach (Component<Item> component in original.TypeToComponent.Values)
                 AddComponent((Component<Item>)component.Clone());
         }
-
-        public abstract IClonable Clone();
 
         int IComparable<Item>.CompareTo(Item other)
         {

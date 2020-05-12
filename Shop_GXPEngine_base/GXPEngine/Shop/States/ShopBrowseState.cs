@@ -1,12 +1,11 @@
-﻿using System;
-using GXPEngine;
+﻿using GXPEngine;
+using System;
 
 namespace States
 {
+    using Controller;
     using Model;
     using View;
-    using Controller;
-    using Model.Items;
 
     public class ShopBrowseState : GameObject
     {
@@ -115,7 +114,6 @@ namespace States
 
         public void Step()
         {
-            // TODO This kills MVC but temporarily easier.
             if (Input.GetKeyDown(Key.TAB))
                 ToggleInventories();
 

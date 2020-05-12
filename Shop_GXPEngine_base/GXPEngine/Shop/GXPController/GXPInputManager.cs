@@ -1,7 +1,6 @@
 ﻿namespace Controller
 {
     using GXPEngine;
-    using Model;
 
     public class GXPInputManager : InputManager<int>
     {

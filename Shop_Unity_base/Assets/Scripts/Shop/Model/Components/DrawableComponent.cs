@@ -6,7 +6,7 @@
         public string DisplayName { get; private set; }
         public int DisplayCost { get; private set; }
 
-        public int displayQuantity;
+        private int displayQuantity;
         public int DisplayQuantity => displayQuantity;
 
         public DrawableComponent(string iconName, string displayName, int displayCost, int displayQuantity)

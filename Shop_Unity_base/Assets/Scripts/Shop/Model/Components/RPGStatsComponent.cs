@@ -1,18 +1,19 @@
-﻿using Utility;
-
-namespace Model
+﻿namespace Model
 {
+    using Utility;
+
     public partial class RPGStatsComponent : Component<CustomerModel>, ITargetable
     {
         private int health;
-        private int mana;
-        private int nourishment;
-        private int strength;
-
-        // Geters can be expanded to add logic before returning
         public int Health => health;
+
+        private int mana;
         public int Mana => mana;
+
+        private int nourishment;
         public int Nourishment => nourishment;
+
+        private int strength;
         public int Strength => strength;
 
         public RPGStatsComponent(int health, int mana, int nourishment, int strength)
@@ -21,24 +22,6 @@ namespace Model
             this.mana = mana;
             this.nourishment = nourishment;
             this.strength = strength;
-        }
-
-        private RPGStatsComponent(RPGStatsComponent original)
-        {
-            CloneMembers(original);
-        }
-
-        private void CloneMembers(RPGStatsComponent original)
-        {
-            health = original.health;
-            mana = original.mana;
-            nourishment = original.nourishment;
-            strength = original.strength;
-        }
-
-        public override IClonable Clone()
-        {
-            return new RPGStatsComponent(this);
         }
 
         public void OnHit(StatsEffect effect, int effectValue, float duration = 0)
@@ -108,6 +91,24 @@ namespace Model
         private int ClampToStandardValues(int value)
         {
             return value.Clamp(0, 999999);
+        }
+
+        public override IClonable Clone()
+        {
+            return new RPGStatsComponent(this);
+        }
+
+        private RPGStatsComponent(RPGStatsComponent original)
+        {
+            CloneMembers(original);
+        }
+
+        private void CloneMembers(RPGStatsComponent original)
+        {
+            health = original.health;
+            mana = original.mana;
+            nourishment = original.nourishment;
+            strength = original.strength;
         }
     }
 }

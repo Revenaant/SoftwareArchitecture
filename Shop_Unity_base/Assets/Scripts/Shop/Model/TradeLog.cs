@@ -10,7 +10,6 @@
         // Returns the cached list of messages
         public static string[] GetMessages()
         {
-            // TODO this defeats the purpose of a queue
             string[] queuedMessages = messages.ToArray();
             messages.Clear();
 
